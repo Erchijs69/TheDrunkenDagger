@@ -14214,7 +14214,7 @@ GameObject:
   - component: {fileID: 1719161632}
   m_Layer: 7
   m_Name: SpearGoblin
-  m_TagString: Elf
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15477,7 +15477,7 @@ GameObject:
   - component: {fileID: 1844803697}
   m_Layer: 7
   m_Name: Goblin
-  m_TagString: Elf
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -20,6 +20,7 @@ TagManager:
   - BottlePlacementSpot
   - Ingredient
   - Bottle
+  - Enemy
   layers:
   - Default
   - TransparentFX
