@@ -10,11 +10,6 @@ public class Spear : MonoBehaviour
             Debug.Log("Spear hit the player! Restarting scene...");
             RestartScene();
         }
-        else if (collision.gameObject.CompareTag("Enemy"))
-        {
-            Debug.Log("Spear hit the enemy! Destroying spear...");
-            Destroy(gameObject);  // Remove the spear on impact with the enemy
-        }
     }
 
     void RestartScene()

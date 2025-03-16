@@ -11,11 +11,13 @@ public class ScoutEnemy : MonoBehaviour
     public Transform spearSpawnPoint;  // Where the spear will be thrown from
     public float throwInterval = 2.0f;  // Time between throws
     public float throwForce = 10f;  // Force at which the spear is thrown
-    
-    // Allow rotation adjustment from Inspector
-    public Vector3 spearRotation = new Vector3(0f, 0f, 90f);  // Default rotation (Z axis 90 degrees)
+    public float spearThrowAngle = 20f;  // Adjustable throw angle in inspector
+    public float predictionTime = 0.5f; // Time ahead to predict player movement
+    public float spearLifetime = 10f; // Time before the spear is destroyed
 
     private bool playerDetected = false;
+    private Vector3 lastPlayerPosition;
+    private Vector3 playerVelocity;
 
     void Start()
     {
@@ -25,6 +27,7 @@ public class ScoutEnemy : MonoBehaviour
     void Update()
     {
         DetectPlayer();
+        TrackPlayerMovement();
     }
 
     void DetectPlayer()
@@ -35,12 +38,20 @@ public class ScoutEnemy : MonoBehaviour
         float distanceToPlayer = directionToPlayer.magnitude;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        // If the player is within the detection range and in the field of view
         if (distanceToPlayer <= detectionRange && angleToPlayer <= fieldOfView / 2)
         {
-            // If the player is detected, rotate to face the player
-            playerDetected = true;
-            RotateTowardsPlayer();
+            if (Physics.Linecast(transform.position, player.position, out RaycastHit hit))
+            {
+                if (hit.collider.gameObject == player.gameObject)
+                {
+                    playerDetected = true;
+                    RotateTowardsPlayer();
+                }
+                else
+                {
+                    playerDetected = false;
+                }
+            }
         }
         else
         {
@@ -51,12 +62,18 @@ public class ScoutEnemy : MonoBehaviour
     void RotateTowardsPlayer()
     {
         Vector3 directionToPlayer = player.position - transform.position;
-        directionToPlayer.y = 0;  // Keep the rotation on the y-axis
+        directionToPlayer.y = 0;
         Quaternion rotation = Quaternion.LookRotation(directionToPlayer);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
     }
 
-    // Throw spear at regular intervals
+    void TrackPlayerMovement()
+    {
+        Vector3 newPosition = player.position;
+        playerVelocity = (newPosition - lastPlayerPosition) / Time.deltaTime;
+        lastPlayerPosition = newPosition;
+    }
+
     IEnumerator ThrowSpearsAtIntervals()
     {
         while (true)
@@ -65,57 +82,38 @@ public class ScoutEnemy : MonoBehaviour
             {
                 ThrowSpear();
             }
-            yield return new WaitForSeconds(throwInterval);  // Wait for the specified interval before throwing the next spear
+            yield return new WaitForSeconds(throwInterval);
         }
     }
 
-    // Throw the spear
     void ThrowSpear()
     {
-        // Define the offset from the spawn point, you can adjust this value
-        Vector3 spawnOffset = spearSpawnPoint.forward * 1.0f; // Adjust the multiplier to change the spawn distance in front of the spawn point
-
-        // Calculate the spawn position by adding the offset to the spawn point's position
+        Vector3 predictedPosition = player.position + (playerVelocity * predictionTime);
+        Vector3 spawnOffset = spearSpawnPoint.forward * 1.0f;
         Vector3 spawnPosition = spearSpawnPoint.position + spawnOffset;
 
-        // Define the rotation of the spear, now editable via the Inspector
-        Quaternion rotation = Quaternion.Euler(spearRotation);  // Use the inspector-defined rotation
+        Quaternion rotation = Quaternion.LookRotation(predictedPosition - spearSpawnPoint.position);
+        rotation *= Quaternion.Euler(spearThrowAngle, 0f, 0f);
 
-        // Instantiate the spear at the new spawn position with the correct rotation
         GameObject spear = Instantiate(spearPrefab, spawnPosition, rotation);
 
-        // Get the rigidbody and apply force
         Rigidbody spearRb = spear.GetComponent<Rigidbody>();
         if (spearRb != null)
         {
-            // Apply force to throw the spear in the direction of the spawn point's forward
-            spearRb.AddForce(spearSpawnPoint.forward * throwForce, ForceMode.VelocityChange);
+            spearRb.AddForce((predictedPosition - spearSpawnPoint.position).normalized * throwForce, ForceMode.VelocityChange);
         }
 
-        // Make the spear rotate to face the player while in the air
-        StartCoroutine(MakeSpearFacePlayer(spear));
+        // Start the spear lifetime coroutine to destroy it after the specified time
+        StartCoroutine(DestroySpearAfterTime(spear, spearLifetime));
     }
 
-    // Coroutine to make the spear's Z-axis always face the player while it's flying
-    IEnumerator MakeSpearFacePlayer(GameObject spear)
+    IEnumerator DestroySpearAfterTime(GameObject spear, float lifetime)
     {
-        while (spear != null)
-        {
-            // Get the direction to the player
-            Vector3 directionToPlayer = player.position - spear.transform.position;
-
-            // Calculate the rotation that aligns the spear's Z-axis to the player
-            Quaternion rotationToPlayer = Quaternion.LookRotation(directionToPlayer);
-
-            // Smoothly rotate the spear to face the player
-            spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, rotationToPlayer, Time.deltaTime * 10f);
-
-            // Wait until the next frame
-            yield return null;
-        }
+        // Wait for the lifetime duration before destroying the spear
+        yield return new WaitForSeconds(lifetime);
+        Destroy(spear);
     }
 
-    // Detect collision with player and restart scene
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
@@ -125,23 +123,19 @@ public class ScoutEnemy : MonoBehaviour
         }
     }
 
-    // Restart the scene
     void RestartScene()
     {
         string currentScene = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(currentScene);
     }
 
-    // Visualize the detection range and field of view in the editor
     void OnDrawGizmos()
     {
         if (player == null) return;
 
-        // Visualize the detection range (circle)
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        // Visualize the field of view (cone)
         Gizmos.color = Color.green;
         Vector3 leftAngle = Quaternion.Euler(0, -fieldOfView / 2, 0) * transform.forward * detectionRange;
         Vector3 rightAngle = Quaternion.Euler(0, fieldOfView / 2, 0) * transform.forward * detectionRange;
@@ -149,7 +143,6 @@ public class ScoutEnemy : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + leftAngle);
         Gizmos.DrawLine(transform.position, transform.position + rightAngle);
 
-        // Draw a line between the player and the enemy (for debugging)
         if (player != null)
         {
             Gizmos.color = Color.blue;
