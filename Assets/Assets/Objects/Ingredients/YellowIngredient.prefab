@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5376603042514491721}
   - component: {fileID: -7735781964646444158}
   - component: {fileID: 3114123989876951254}
-  - component: {fileID: 4211749352951370805}
+  - component: {fileID: -1174765001506915234}
   m_Layer: 8
   m_Name: YellowIngredient
   m_TagString: Ingredient
@@ -126,8 +126,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &4211749352951370805
-BoxCollider:
+--- !u!135 &-1174765001506915234
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -145,5 +145,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9012594740768327788}
   - component: {fileID: 1284431974434957655}
   - component: {fileID: 3555660141849832826}
-  - component: {fileID: 4312608039195215199}
+  - component: {fileID: 8209245675711863160}
   m_Layer: 8
   m_Name: PinkIngredient
   m_TagString: Ingredient
@@ -126,8 +126,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &4312608039195215199
-BoxCollider:
+--- !u!135 &8209245675711863160
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -145,5 +145,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}

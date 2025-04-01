@@ -11,6 +11,7 @@ public class ItemPickup : MonoBehaviour
     public float yOffset = 0.5f;  
     public float maxAngle = 30f;  
     public float placementHeightOffset = 0.1f; // Adjustable height offset above ghost
+    public float maxPlaceDistance = 5f; // Maximum distance the item can be placed from the player
 
     private GameObject heldItem;
     private Rigidbody heldItemRb;
@@ -19,6 +20,8 @@ public class ItemPickup : MonoBehaviour
     private GameObject ghostItem;  
     private Material originalMaterial;  
     private Material ghostMaterial;    
+
+    private Vector3 originalItemPosition; // Track the original position of the item
 
     void Start()
     {
@@ -55,9 +58,10 @@ public class ItemPickup : MonoBehaviour
             heldItem.transform.localPosition = Vector3.zero;
             heldItem.transform.localRotation = Quaternion.identity;
 
-            if (heldItem.GetComponent<Renderer>())
-                originalMaterial = heldItem.GetComponent<Renderer>().material;
+            // Track the original position of the item for placement distance checks
+            originalItemPosition = heldItem.transform.position;
 
+            // Create the ghost item for preview
             CreateGhostItem();
         }
     }
@@ -65,8 +69,16 @@ public class ItemPickup : MonoBehaviour
     void CreateGhostItem()
     {
         ghostItem = Instantiate(heldItem, heldItem.transform.position, heldItem.transform.rotation);
-        ghostItem.GetComponent<Renderer>().material = ghostMaterial;  
-        ghostItem.SetActive(false);
+        ghostItem.GetComponent<Renderer>().material = ghostMaterial; // Apply ghost material
+
+        // Disable any colliders on the ghost object
+        Collider[] ghostColliders = ghostItem.GetComponentsInChildren<Collider>();
+        foreach (Collider col in ghostColliders)
+        {
+            col.enabled = false;
+        }
+
+        ghostItem.SetActive(false); // Make it inactive initially
     }
 
     void UpdateGhostItemPosition()
@@ -75,9 +87,6 @@ public class ItemPickup : MonoBehaviour
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100f, surfaceLayer))
         {
             Vector3 surfaceNormal = hit.normal;
-
-            Debug.DrawRay(hit.point, surfaceNormal, Color.green, 0.1f);
-            Debug.Log("Surface Normal Angle: " + Vector3.Angle(surfaceNormal, Vector3.up));
 
             if (Vector3.Angle(surfaceNormal, Vector3.up) <= maxAngle)
             {
@@ -91,18 +100,42 @@ public class ItemPickup : MonoBehaviour
                 ghostItem.SetActive(false);
             }
         }
+        else
+        {
+            // If no surface is detected by the raycast, hide the ghost item
+            ghostItem.SetActive(false);
+        }
+
+        // Check if the ghost item is too far from the player
+        float distanceToPlayer = Vector3.Distance(transform.position, ghostItem.transform.position);
+        if (distanceToPlayer > maxPlaceDistance)
+        {
+            ghostItem.SetActive(false); // Hide ghost item if it's too far from the player
+        }
     }
 
     void TryPlaceItem()
     {
+        // Ensure the item is within the maximum placement distance from the player
+        float distanceToPlayer = Vector3.Distance(transform.position, ghostItem.transform.position);
+        
+        if (distanceToPlayer > maxPlaceDistance)
+        {
+            Debug.Log("Placement too far from player.");
+            return; // Do not allow placement if it's too far
+        }
+
         if (ghostItem.activeSelf)  
         {
             heldItem.transform.SetParent(null);
             heldItem.transform.position = ghostItem.transform.position + (Vector3.up * placementHeightOffset);
             heldItem.transform.rotation = Quaternion.identity; // Keep upright
 
-            Destroy(ghostItem);
+            // Make the item interactable with physics again
             heldItemRb.isKinematic = false;
+
+            // Disable the ghost and finalize placement
+            Destroy(ghostItem);
             heldItem = null;
 
             Debug.Log("Item placed at: " + heldItem.transform.position);
@@ -113,6 +146,4 @@ public class ItemPickup : MonoBehaviour
         }
     }
 }
-
-
 

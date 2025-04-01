@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2536270936050240015}
   - component: {fileID: 4581729515045395828}
   - component: {fileID: 5978567819014020168}
-  - component: {fileID: 7594923111596262039}
+  - component: {fileID: -1879976894109829835}
   m_Layer: 8
   m_Name: GreenIngredient
   m_TagString: Ingredient
@@ -126,8 +126,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &7594923111596262039
-BoxCollider:
+--- !u!135 &-1879976894109829835
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -145,5 +145,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}

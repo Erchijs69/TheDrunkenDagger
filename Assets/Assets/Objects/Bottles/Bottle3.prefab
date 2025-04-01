@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 265392350487138207}
   - component: {fileID: 2740234293647030248}
   - component: {fileID: 3427329365885741884}
-  - component: {fileID: -836193853026393507}
   - component: {fileID: 3243123961765897470}
+  - component: {fileID: -4682969998936404953}
   m_Layer: 8
   m_Name: Bottle3
   m_TagString: Bottle
@@ -86,27 +86,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &-836193853026393507
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7057685485972578442}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.5122154, y: 1.1140572, z: 0.5122153}
-  m_Center: {x: 0.00000035762787, y: -0.12023145, z: 0}
 --- !u!54 &3243123961765897470
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -133,7 +112,28 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
+--- !u!135 &-4682969998936404953
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7057685485972578442}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5570286
+  m_Center: {x: 0.00000035762787, y: -0.12023145, z: 0}
 --- !u!1 &7368436766033482849
 GameObject:
   m_ObjectHideFlags: 0
