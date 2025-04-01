@@ -21,14 +21,11 @@ public class PlayerMovement : MonoBehaviour
 
     private float originalHeight;
     private float crouchHeight = 0.5f;
-    private float timeToCrouchDown = 0.1f; // Faster time to crouch down
-    private float timeToStandUp = 0.25f; // Slower time to stand up
-    private float currentHeight;
+    private float crouchTransitionTime = 0.1f;
 
     void Start()
     {
-        originalHeight = controller.height; // Save the original height of the player
-        currentHeight = originalHeight; // Set the initial height to the original height
+        originalHeight = controller.height;
     }
 
     void Update()
@@ -37,73 +34,56 @@ public class PlayerMovement : MonoBehaviour
 
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // Reset the velocity when grounded
+            velocity.y = -2f;
         }
 
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        // Handle crouch input
-        if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.C))
+        // Handle crouching
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C))
         {
-            ToggleCrouch();
+            if (!isCrouching)
+            {
+                StartCoroutine(ChangeCrouchState(true));
+            }
+        }
+        else
+        {
+            if (isCrouching)
+            {
+                StartCoroutine(ChangeCrouchState(false));
+            }
         }
 
-        // Set crouch speed or normal speed
         float moveSpeed = isCrouching ? crouchSpeed : speed;
-
         Vector3 move = transform.right * x + transform.forward * z;
-
         controller.Move(move * moveSpeed * Time.deltaTime);
 
         if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jump only when standing
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
-    // Toggle crouch state
-    void ToggleCrouch()
-    {
-        if (isCrouching)
-        {
-            StartCoroutine(StandUp());
-        }
-        else
-        {
-            StartCoroutine(CrouchDown());
-        }
-    }
-
-    // Smoothly crouch the player down with a faster transition
-    IEnumerator CrouchDown()
+    IEnumerator ChangeCrouchState(bool crouching)
     {
         float timeElapsed = 0f;
-        while (timeElapsed < timeToCrouchDown) // Faster time to crouch down
+        float startHeight = controller.height;
+        float targetHeight = crouching ? crouchHeight : originalHeight;
+
+        while (timeElapsed < crouchTransitionTime)
         {
-            controller.height = Mathf.Lerp(originalHeight, crouchHeight, timeElapsed / timeToCrouchDown);
+            controller.height = Mathf.Lerp(startHeight, targetHeight, timeElapsed / crouchTransitionTime);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-        controller.height = crouchHeight; // Ensure the final height is set
-        isCrouching = true;
-    }
 
-    // Smoothly stand the player up
-    IEnumerator StandUp()
-    {
-        float timeElapsed = 0f;
-        while (timeElapsed < timeToStandUp) // Slower time to stand up
-        {
-            controller.height = Mathf.Lerp(crouchHeight, originalHeight, timeElapsed / timeToStandUp);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-        controller.height = originalHeight; // Ensure the final height is set
-        isCrouching = false;
+        controller.height = targetHeight;
+        isCrouching = crouching;
     }
 }
 

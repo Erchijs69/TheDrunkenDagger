@@ -21,7 +21,7 @@ public class Interactor : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Ray r = new Ray(InteractorSource.position, InteractorSource.forward);
+            Ray r = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
             RaycastHit hitInfo;
             Debug.DrawRay(InteractorSource.position, InteractorSource.forward * InteractRange, Color.red, 0.1f);
 

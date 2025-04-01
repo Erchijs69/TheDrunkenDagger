@@ -5,27 +5,36 @@ using UnityEngine;
 public class PotionSystem : MonoBehaviour
 {
     public Transform bottlePlacementSpot;
-    public Transform[] ingredientSpots;
+    public LayerMask ingredientLayer;  // Layer where ingredients are placed
     public GameObject potionPrefab;
-    public GameObject[] ingredientPrefabs;
-    private List<GameObject> placedIngredients = new List<GameObject>();
-    private GameObject placedBottle;
 
-    void Start()
+    private GameObject placedBottle;
+    private List<GameObject> placedIngredients = new List<GameObject>();
+
+    public Material ghostIngredientMaterial;  // Material for the ghost ingredients (semi-transparent)
+
+    void Update()
     {
-        // No need for InitializeIngredientColors method anymore
+        // This would be used to place ingredients on the ingredient layers
     }
 
     public void PlaceIngredient(GameObject ingredient)
     {
         if (placedIngredients.Count < 3)
         {
-            ingredient.transform.position = ingredientSpots[placedIngredients.Count].position;
-            placedIngredients.Add(ingredient);
-
-            if (placedIngredients.Count == 3)
+            RaycastHit hit;
+            if (Physics.Raycast(ingredient.transform.position, Vector3.down, out hit, 1f, ingredientLayer))
             {
-                ProcessPotionCreation();
+                // Make sure it's a valid ingredient placement area
+                if (hit.collider.CompareTag("IngredientLayer"))
+                {
+                    ingredient.transform.position = hit.point;
+                    placedIngredients.Add(ingredient);
+                    if (placedIngredients.Count == 3)
+                    {
+                        ProcessPotionCreation();
+                    }
+                }
             }
         }
     }
@@ -52,7 +61,6 @@ public class PotionSystem : MonoBehaviour
         Color blendedColor = Color.black;
         if (placedIngredients.Count == 3)
         {
-            // Get the ingredient colors from the Ingredient component
             Color color1 = placedIngredients[0].GetComponent<Ingredient>().ingredientColor;
             Color color2 = placedIngredients[1].GetComponent<Ingredient>().ingredientColor;
             Color color3 = placedIngredients[2].GetComponent<Ingredient>().ingredientColor;
