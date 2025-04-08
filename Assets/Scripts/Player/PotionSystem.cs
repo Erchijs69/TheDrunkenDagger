@@ -4,37 +4,78 @@ using UnityEngine;
 
 public class PotionSystem : MonoBehaviour
 {
-    public Transform bottlePlacementSpot;
-    public LayerMask ingredientLayer;  // Layer where ingredients are placed
-    public GameObject potionPrefab;
-
+    [SerializeField] private List<GameObject> placedIngredients = new List<GameObject>();
+    public Transform[] ingredientSpots; // 3 ingredient spots placed in the scene
     private GameObject placedBottle;
-    private List<GameObject> placedIngredients = new List<GameObject>();
 
-    public Material ghostIngredientMaterial;  // Material for the ghost ingredients (semi-transparent)
+    void Start()
+    {
+        // Ensure ingredient spots are disabled initially
+        DisableIngredientSpots();
+    }
 
     void Update()
     {
-        // This would be used to place ingredients on the ingredient layers
+        // No need for Update logic as everything is triggered by placing the bottle and ingredients
+    }
+
+    // Place the bottle at the desired spot (where the player places it)
+    public void PlaceBottle(GameObject bottle)
+    {
+        if (placedBottle != null)
+        {
+            Debug.Log("Bottle already placed.");
+            return;
+        }
+
+        placedBottle = bottle;
+        // Set the bottle's position directly where the player wants it (e.g., clicked position or held position)
+        placedBottle.transform.SetParent(transform); // Keep the parent for organization (optional)
+        
+        Debug.Log($"Bottle placed: {bottle.name}");
+
+        ShowIngredientSpots(); // Enable ingredient spots when the bottle is placed
+    }
+
+    void ShowIngredientSpots()
+    {
+        foreach (Transform spot in ingredientSpots)
+        {
+            spot.gameObject.SetActive(true); // Enable ingredient spots when bottle is placed
+        }
     }
 
     public void PlaceIngredient(GameObject ingredient)
     {
-        if (placedIngredients.Count < 3)
+        if (placedBottle == null)
         {
-            RaycastHit hit;
-            if (Physics.Raycast(ingredient.transform.position, Vector3.down, out hit, 1f, ingredientLayer))
+            Debug.Log("Cannot place ingredient: Bottle has not been placed yet.");
+            return;
+        }
+
+        if (placedIngredients.Count >= 3)
+        {
+            Debug.Log("Already placed 3 ingredients.");
+            return;
+        }
+
+        for (int i = 0; i < ingredientSpots.Length; i++)
+        {
+            if (placedIngredients.Count <= i && ingredientSpots[i] != null && !placedIngredients.Contains(ingredient))
             {
-                // Make sure it's a valid ingredient placement area
-                if (hit.collider.CompareTag("IngredientLayer"))
+                ingredient.transform.position = ingredientSpots[i].position;
+                ingredient.transform.SetParent(ingredientSpots[i]);
+                placedIngredients.Add(ingredient);
+
+                Debug.Log($"Ingredient placed on spot {i + 1}: {ingredient.name}");
+
+                if (placedIngredients.Count == 3)
                 {
-                    ingredient.transform.position = hit.point;
-                    placedIngredients.Add(ingredient);
-                    if (placedIngredients.Count == 3)
-                    {
-                        ProcessPotionCreation();
-                    }
+                    Debug.Log("All ingredients placed. Processing potion...");
+                    ProcessPotionCreation();
                 }
+
+                return;
             }
         }
     }
@@ -42,23 +83,42 @@ public class PotionSystem : MonoBehaviour
     void ProcessPotionCreation()
     {
         Color potionColor = GeneratePotionColor();
+        Debug.Log($"Potion color generated: {potionColor}");
 
         if (placedBottle != null)
         {
-            Renderer bottleRenderer = placedBottle.transform.GetChild(0).GetComponent<Renderer>();
-            bottleRenderer.material.color = potionColor;
+            Transform bottleVisual = placedBottle.transform.GetChild(0);
+            if (bottleVisual != null)
+            {
+                Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
+                if (bottleRenderer != null)
+                {
+                    bottleRenderer.material.color = potionColor;
+                    Debug.Log("Applied color to bottle.");
+                }
+                else
+                {
+                    Debug.LogError("Bottle renderer NOT found!");
+                }
+            }
+            else
+            {
+                Debug.LogError("Bottle visual child not found!");
+            }
         }
 
         foreach (GameObject ingredient in placedIngredients)
         {
             Destroy(ingredient);
         }
+
         placedIngredients.Clear();
     }
 
     Color GeneratePotionColor()
     {
         Color blendedColor = Color.black;
+
         if (placedIngredients.Count == 3)
         {
             Color color1 = placedIngredients[0].GetComponent<Ingredient>().ingredientColor;
@@ -66,20 +126,41 @@ public class PotionSystem : MonoBehaviour
             Color color3 = placedIngredients[2].GetComponent<Ingredient>().ingredientColor;
 
             blendedColor = new Color(
-                (color1.r + color2.r + color3.r) / 3,
-                (color1.g + color2.g + color3.g) / 3,
-                (color1.b + color2.b + color3.b) / 3
+                (color1.r + color2.r + color3.r) / 3f,
+                (color1.g + color2.g + color3.g) / 3f,
+                (color1.b + color2.b + color3.b) / 3f
             );
         }
+
         return blendedColor;
     }
 
-    public void PlaceBottle(GameObject bottle)
+    public void RemoveBottle()
     {
-        if (placedBottle == null && bottle.CompareTag("PickupItem"))
+        placedBottle = null;
+        DisableIngredientSpots(); // Hide ingredient spots when bottle is removed
+        Debug.Log("Bottle removed.");
+    }
+
+    void DisableIngredientSpots()
+    {
+        foreach (Transform spot in ingredientSpots)
         {
-            placedBottle = bottle;
-            bottle.transform.position = bottlePlacementSpot.position;
+            spot.gameObject.SetActive(false); // Disable ingredient spots if bottle is removed
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -52,7 +52,6 @@ public class Interactor : MonoBehaviour
             if (currentHitObject == null)
             {
                 Debug.Log("Raycast hit: Nothing");
-                return;
             }
         }
     }

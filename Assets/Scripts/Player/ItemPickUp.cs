@@ -10,22 +10,20 @@ public class ItemPickup : MonoBehaviour
     public float pickupRange = 3f;
     public float yOffset = 0.5f;  
     public float maxAngle = 30f;  
-    public float placementHeightOffset = 0.1f; // Adjustable height offset above ghost
-    public float maxPlaceDistance = 5f; // Maximum distance the item can be placed from the player
+    public float placementHeightOffset = 0.1f;
+    public float maxPlaceDistance = 5f;
 
     private GameObject heldItem;
     private Rigidbody heldItemRb;
     private Collider itemCollider;
 
     private GameObject ghostItem;  
-    private Material originalMaterial;  
     private Material ghostMaterial;    
 
-    private Vector3 originalItemPosition; // Track the original position of the item
+    private Vector3 originalItemPosition;
 
     void Start()
     {
-        // Create the ghost material
         ghostMaterial = new Material(Shader.Find("Standard"));
         ghostMaterial.color = new Color(1f, 1f, 1f, 0.3f);  
     }
@@ -45,44 +43,50 @@ public class ItemPickup : MonoBehaviour
     }
 
     void TryPickupItem()
+{
+    Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+    RaycastHit hit;
+
+    if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
     {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, pickupRange, itemLayer))
-        {
-            heldItem = hit.collider.gameObject;
-            heldItemRb = heldItem.GetComponent<Rigidbody>();
-            itemCollider = heldItem.GetComponent<Collider>();
+        heldItem = hit.collider.gameObject;
+        heldItemRb = heldItem.GetComponent<Rigidbody>();
+        itemCollider = heldItem.GetComponent<Collider>();
 
-            heldItemRb.isKinematic = true;
-            heldItem.transform.SetParent(holdPosition);
-            heldItem.transform.localPosition = Vector3.zero;
-            heldItem.transform.localRotation = Quaternion.identity;
+        heldItemRb.isKinematic = true;
+        heldItem.transform.SetParent(holdPosition);
+        heldItem.transform.localPosition = Vector3.zero;
+        heldItem.transform.localRotation = Quaternion.identity;
 
-            // Track the original position of the item for placement distance checks
-            originalItemPosition = heldItem.transform.position;
+        originalItemPosition = heldItem.transform.position;
 
-            // Create the ghost item for preview
-            CreateGhostItem();
-        }
+        CreateGhostItem();
     }
+}
+
 
     void CreateGhostItem()
     {
         ghostItem = Instantiate(heldItem, heldItem.transform.position, heldItem.transform.rotation);
-        ghostItem.GetComponent<Renderer>().material = ghostMaterial; // Apply ghost material
+        Renderer ghostRenderer = ghostItem.GetComponent<Renderer>();
+        if (ghostRenderer != null)
+        {
+            ghostRenderer.material = ghostMaterial;
+        }
 
-        // Disable any colliders on the ghost object
         Collider[] ghostColliders = ghostItem.GetComponentsInChildren<Collider>();
         foreach (Collider col in ghostColliders)
         {
             col.enabled = false;
         }
 
-        ghostItem.SetActive(false); // Make it inactive initially
+        ghostItem.SetActive(false);
     }
 
     void UpdateGhostItemPosition()
     {
+        if (ghostItem == null) return;
+
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100f, surfaceLayer))
         {
@@ -90,10 +94,10 @@ public class ItemPickup : MonoBehaviour
 
             if (Vector3.Angle(surfaceNormal, Vector3.up) <= maxAngle)
             {
-                ghostItem.SetActive(true);
                 Vector3 targetPosition = hit.point - (Vector3.up * yOffset);  
                 ghostItem.transform.position = targetPosition;
-                ghostItem.transform.rotation = Quaternion.identity; // Keep upright
+                ghostItem.transform.rotation = Quaternion.identity;
+                ghostItem.SetActive(true);
             }
             else
             {
@@ -102,48 +106,42 @@ public class ItemPickup : MonoBehaviour
         }
         else
         {
-            // If no surface is detected by the raycast, hide the ghost item
             ghostItem.SetActive(false);
         }
 
-        // Check if the ghost item is too far from the player
         float distanceToPlayer = Vector3.Distance(transform.position, ghostItem.transform.position);
         if (distanceToPlayer > maxPlaceDistance)
         {
-            ghostItem.SetActive(false); // Hide ghost item if it's too far from the player
+            ghostItem.SetActive(false);
         }
     }
 
     void TryPlaceItem()
     {
-        // Ensure the item is within the maximum placement distance from the player
+        if (ghostItem == null || !ghostItem.activeSelf)
+        {
+            Debug.Log("Invalid Placement - Ghost Item Not Active");
+            return;
+        }
+
         float distanceToPlayer = Vector3.Distance(transform.position, ghostItem.transform.position);
-        
         if (distanceToPlayer > maxPlaceDistance)
         {
             Debug.Log("Placement too far from player.");
-            return; // Do not allow placement if it's too far
+            return;
         }
 
-        if (ghostItem.activeSelf)  
-        {
-            heldItem.transform.SetParent(null);
-            heldItem.transform.position = ghostItem.transform.position + (Vector3.up * placementHeightOffset);
-            heldItem.transform.rotation = Quaternion.identity; // Keep upright
+        heldItem.transform.SetParent(null);
+        heldItem.transform.position = ghostItem.transform.position + (Vector3.up * placementHeightOffset);
+        heldItem.transform.rotation = Quaternion.identity;
 
-            // Make the item interactable with physics again
-            heldItemRb.isKinematic = false;
+        heldItemRb.isKinematic = false;
 
-            // Disable the ghost and finalize placement
-            Destroy(ghostItem);
-            heldItem = null;
+        Destroy(ghostItem);
+        Debug.Log("Item placed at: " + heldItem.transform.position);
 
-            Debug.Log("Item placed at: " + heldItem.transform.position);
-        }
-        else
-        {
-            Debug.Log("Invalid Placement - Ghost Item Not Active");
-        }
+        heldItem = null;
     }
 }
+
 
