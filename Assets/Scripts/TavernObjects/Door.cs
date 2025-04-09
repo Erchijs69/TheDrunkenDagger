@@ -9,7 +9,10 @@ public class Door : MonoBehaviour, IInteractable
     private bool isClosed = true;
     public ElfMovement elfMovement;
     public float doorAnimationDelay = 0.5f;
-    private bool hasTriggeredElf = false;  // Ensures the elf only starts moving once
+    private bool hasTriggeredElf = false;
+
+    // Add a reference to the QuestTrigger script
+    public QuestTrigger questTrigger;  // Reference to the QuestTrigger
 
     void Start()
     {
@@ -21,7 +24,7 @@ public class Door : MonoBehaviour, IInteractable
         }
         else
         {
-            elfMovement.StopMovement();  // Ensure the Elf starts stationary
+            elfMovement.StopMovement();
         }
     }
 
@@ -30,16 +33,20 @@ public class Door : MonoBehaviour, IInteractable
         // Ensure this is only for door interactions
         if (!CompareTag("Door")) return;
 
-        // Open door animation and trigger elf movement only the first time
         if (isClosed)
         {
             mAnimator.SetTrigger("Open");
 
-            // ONLY trigger Elf movement the FIRST TIME the door opens
             if (!hasTriggeredElf && elfMovement != null)
             {
                 StartCoroutine(EnableElfMovementAfterDelay());
-                hasTriggeredElf = true;  // Mark that we already triggered the elf
+                hasTriggeredElf = true;
+            }
+
+            // Trigger the next quest after opening the door
+            if (questTrigger != null)
+            {
+                questTrigger.TriggerNextQuest();
             }
         }
         else
@@ -47,7 +54,7 @@ public class Door : MonoBehaviour, IInteractable
             mAnimator.SetTrigger("Close");
         }
 
-        isClosed = !isClosed;  // Toggle the door's open/closed state
+        isClosed = !isClosed;
     }
 
     private IEnumerator EnableElfMovementAfterDelay()
@@ -55,7 +62,8 @@ public class Door : MonoBehaviour, IInteractable
         yield return new WaitForSeconds(doorAnimationDelay);
         if (elfMovement != null)
         {
-            elfMovement.StartMovement();  // Start movement ONLY ONCE
+            elfMovement.StartMovement();
         }
     }
 }
+

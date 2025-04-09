@@ -14,27 +14,24 @@ public class PotionSystem : MonoBehaviour
         DisableIngredientSpots();
     }
 
-    void Update()
-    {
-        // No need for Update logic as everything is triggered by placing the bottle and ingredients
-    }
-
     // Place the bottle at the desired spot (where the player places it)
     public void PlaceBottle(GameObject bottle)
     {
+        // If there's an already placed bottle, remove it first (reset the potion system)
         if (placedBottle != null)
         {
-            Debug.Log("Bottle already placed.");
-            return;
+            RemoveBottle();
         }
 
+        // Set the new bottle as the placed bottle
         placedBottle = bottle;
-        // Set the bottle's position directly where the player wants it (e.g., clicked position or held position)
         placedBottle.transform.SetParent(transform); // Keep the parent for organization (optional)
         
+        // Debugging to check if bottle is correctly placed
         Debug.Log($"Bottle placed: {bottle.name}");
 
-        ShowIngredientSpots(); // Enable ingredient spots when the bottle is placed
+        // Show the ingredient spots for this bottle
+        ShowIngredientSpots();
     }
 
     void ShowIngredientSpots()
@@ -87,7 +84,7 @@ public class PotionSystem : MonoBehaviour
 
         if (placedBottle != null)
         {
-            Transform bottleVisual = placedBottle.transform.GetChild(0);
+            Transform bottleVisual = placedBottle.transform.GetChild(0); // Assuming the bottle's visual is its first child
             if (bottleVisual != null)
             {
                 Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
@@ -107,6 +104,7 @@ public class PotionSystem : MonoBehaviour
             }
         }
 
+        // Destroy all placed ingredients after potion is created
         foreach (GameObject ingredient in placedIngredients)
         {
             Destroy(ingredient);
@@ -137,9 +135,14 @@ public class PotionSystem : MonoBehaviour
 
     public void RemoveBottle()
     {
-        placedBottle = null;
-        DisableIngredientSpots(); // Hide ingredient spots when bottle is removed
-        Debug.Log("Bottle removed.");
+        if (placedBottle != null)
+        {
+            // Reset the placed bottle and clear ingredients
+            placedBottle = null;
+            placedIngredients.Clear();
+            DisableIngredientSpots(); // Hide ingredient spots when bottle is removed
+            Debug.Log("Bottle removed.");
+        }
     }
 
     void DisableIngredientSpots()
@@ -150,6 +153,8 @@ public class PotionSystem : MonoBehaviour
         }
     }
 }
+
+
 
 
 
