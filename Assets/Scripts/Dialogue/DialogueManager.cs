@@ -6,15 +6,21 @@ using Unity.AI.Navigation.Samples;
 public class DialogueManager : MonoBehaviour
 {
     public TMP_Text dialogueText;
+    public TMP_Text speakerNameText;
     public GameObject dialoguePanel;
-    public string[] dialogueLines; // Dialogue lines with color tags
+
+    public DialogueLine[] dialogueLines; // Now uses custom class with speakerName
     private int currentLineIndex = 0;
 
     private ElfMovement elfMovement;
+    private PlayerMovement playerMovement;
+    private MouseLook mouseLook;
 
     void Start()
     {
         elfMovement = FindObjectOfType<ElfMovement>();
+        playerMovement = FindObjectOfType<PlayerMovement>();
+        mouseLook = FindObjectOfType<MouseLook>();
         dialoguePanel.SetActive(false);
     }
 
@@ -22,7 +28,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (elfMovement != null && elfMovement.isDialogueActive)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0))
             {
                 AdvanceDialogue();
             }
@@ -39,13 +45,23 @@ public class DialogueManager : MonoBehaviour
         dialoguePanel.SetActive(true);
         currentLineIndex = 0;
         ShowDialogueLine();
+
+        if (playerMovement != null)
+            playerMovement.enabled = false;
+
+        if (mouseLook != null)
+            mouseLook.enabled = false;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void ShowDialogueLine()
     {
         if (currentLineIndex < dialogueLines.Length)
         {
-            dialogueText.text = dialogueLines[currentLineIndex];
+            speakerNameText.text = dialogueLines[currentLineIndex].speakerName;
+            dialogueText.text = dialogueLines[currentLineIndex].lineText;
             currentLineIndex++;
         }
         else
@@ -62,6 +78,15 @@ public class DialogueManager : MonoBehaviour
         {
             elfMovement.OnDialogueEnd();
         }
+
+        if (playerMovement != null)
+            playerMovement.enabled = true;
+
+        if (mouseLook != null)
+            mouseLook.enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void AdvanceDialogue()
@@ -69,5 +94,10 @@ public class DialogueManager : MonoBehaviour
         ShowDialogueLine();
     }
 }
+
+
+
+
+
 
 

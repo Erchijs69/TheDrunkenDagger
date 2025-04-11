@@ -3,10 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation.Samples;
 
+[System.Serializable]
+public class DialogueLine
+{
+    public string speakerName;
+    [TextArea(2, 5)]
+    public string lineText;
+}
+
 public class Waypoint : MonoBehaviour
 {
-    public string[] dialogueLines;  // Dialogue lines for this waypoint
-    public bool useStopForSeconds = false;  // Whether to stop at this waypoint for a few seconds
-    public float stopDuration = 3f;  // Duration to stop at this waypoint
+    public DialogueLine[] dialogueLines;
+    public bool useStopForSeconds = false;
+    public float stopDuration = 3f;
 }
+
+
 

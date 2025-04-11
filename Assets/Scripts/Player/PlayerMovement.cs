@@ -7,13 +7,15 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
 
     public float speed = 12f;
-    public float crouchSpeed = 6f; // Speed when crouching
+    public float crouchSpeed = 6f;
     public float gravity = -9.81f;
     public float jumpHeight = 3f;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
+
+    public bool canMove = true;
 
     private Vector3 velocity;
     private bool isGrounded;
@@ -30,6 +32,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (!canMove) return;
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
@@ -40,7 +44,6 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        // Handle crouching
         if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C))
         {
             if (!isCrouching)
