@@ -21,6 +21,7 @@ TagManager:
   - Ingredient
   - Bottle
   - Enemy
+  - Water
   layers:
   - Default
   - TransparentFX

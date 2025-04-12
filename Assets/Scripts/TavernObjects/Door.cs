@@ -11,7 +11,6 @@ public class Door : MonoBehaviour, IInteractable
     public float doorAnimationDelay = 0.5f;
     private bool hasTriggeredElf = false;
 
-    // Add a reference to the QuestTrigger script
     public QuestTrigger questTrigger;  // Reference to the QuestTrigger
 
     void Start()
@@ -30,9 +29,9 @@ public class Door : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        // Ensure this is only for door interactions
         if (!CompareTag("Door")) return;
 
+        // Only open if it’s still closed
         if (isClosed)
         {
             mAnimator.SetTrigger("Open");
@@ -43,18 +42,13 @@ public class Door : MonoBehaviour, IInteractable
                 hasTriggeredElf = true;
             }
 
-            // Trigger the next quest after opening the door
             if (questTrigger != null)
             {
                 questTrigger.TriggerNextQuest();
             }
-        }
-        else
-        {
-            mAnimator.SetTrigger("Close");
-        }
 
-        isClosed = !isClosed;
+            isClosed = false;  // Update state so it doesn't reopen again
+        }
     }
 
     private IEnumerator EnableElfMovementAfterDelay()
@@ -66,4 +60,5 @@ public class Door : MonoBehaviour, IInteractable
         }
     }
 }
+
 
