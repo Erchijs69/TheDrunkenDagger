@@ -88,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Vector3 pos = transform.position;
             float targetY = waterSurfaceY - controller.height / 2 + floatHeight;
-            pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * 2f);
+            pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * 10f); // Increased multiplier here
             transform.position = pos;
         }
         else
