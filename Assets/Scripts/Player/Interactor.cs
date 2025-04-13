@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Required for scene changing
 using System.Collections;
 using Unity.AI.Navigation.Samples;
 
@@ -12,8 +13,7 @@ public class Interactor : MonoBehaviour
     public Transform InteractorSource;
     public float InteractRange = 3f;
 
-    public LayerMask doorLayer;
-    public LayerMask elfLayer;
+    public LayerMask interactableLayers; // Set this to include Door, Elf, Cart layers
 
     private GameObject currentHitObject;
 
@@ -21,36 +21,30 @@ public class Interactor : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Ray r = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
-            RaycastHit hitInfo;
+            Ray ray = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
+            RaycastHit hit;
+
             Debug.DrawRay(InteractorSource.position, InteractorSource.forward * InteractRange, Color.red, 0.1f);
 
-            currentHitObject = null;
-
-            if (Physics.Raycast(r, out hitInfo, InteractRange, doorLayer))
+            if (Physics.Raycast(ray, out hit, InteractRange, interactableLayers))
             {
-                currentHitObject = hitInfo.collider.gameObject;
-                Door door = currentHitObject.GetComponent<Door>();
-                if (door != null)
+                currentHitObject = hit.collider.gameObject;
+
+                IInteractable interactable = currentHitObject.GetComponent<IInteractable>();
+
+                if (interactable != null)
                 {
-                    door.Interact();
-                    Debug.Log("Raycast hit a Door: " + currentHitObject.name);
-                    return;
+                    interactable.Interact();
+                    Debug.Log($"Interacted with {currentHitObject.name}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Hit object {currentHitObject.name} does not implement IInteractable.");
                 }
             }
-            else if (Physics.Raycast(r, out hitInfo, InteractRange, elfLayer))
+            else
             {
-                currentHitObject = hitInfo.collider.gameObject;
-                ElfMovement elf = currentHitObject.GetComponent<ElfMovement>();
-                if (elf != null && elf.waitingForPlayer)
-                {
-                    Debug.Log("Raycast hit an Elf: " + currentHitObject.name);
-                    elf.Interact();
-                }
-            }
-
-            if (currentHitObject == null)
-            {
+                currentHitObject = null;
                 Debug.Log("Raycast hit: Nothing");
             }
         }
@@ -58,7 +52,12 @@ public class Interactor : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(InteractorSource.position, InteractRange);
+        if (InteractorSource != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(InteractorSource.position, InteractRange);
+        }
     }
 }
+
+
