@@ -1,4 +1,4 @@
-using System.Collections; 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +24,6 @@ public class ItemPickup : MonoBehaviour
 
     private Animator holdAnimator;
     private bool isDrinking = false;
-    private List<GameObject> placedIngredients = new List<GameObject>();
 
     void Start()
     {
@@ -60,8 +59,7 @@ public class ItemPickup : MonoBehaviour
             UpdateGhostItemPosition();
     }
 
-
-     void TryPickupItem()
+    void TryPickupItem()
     {
         if (heldItem != null) return; // Don't pick up if already holding
 
@@ -72,13 +70,7 @@ public class ItemPickup : MonoBehaviour
         {
             GameObject item = hit.collider.gameObject;
 
-            // Check if the item is already placed in the potion system
-            if (placedIngredients.Contains(item))
-            {
-                Debug.Log("Cannot pick up placed ingredient.");
-                return; // Do nothing if the ingredient is already placed
-            }
-
+            // Allow picking up all items, including ingredients
             heldItem = item;
             heldItemRb = heldItem.GetComponent<Rigidbody>();
             itemCollider = heldItem.GetComponent<Collider>();
@@ -171,12 +163,6 @@ public class ItemPickup : MonoBehaviour
 
         Debug.Log("Item placed at: " + heldItem.transform.position);
 
-        // If it's an ingredient, mark it as placed
-        if (heldItem.CompareTag("Ingredient"))
-        {
-            placedIngredients.Add(heldItem);
-        }
-
         heldItem = null;
     }
 
@@ -208,66 +194,63 @@ public class ItemPickup : MonoBehaviour
     }
 
     private IEnumerator DrinkPotion()
-{
-    if (heldItem != null)
     {
-        Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
-        if (liquid != null && liquid.gameObject.activeSelf && liquid.fillAmount >= 0.5f)
+        if (heldItem != null)
         {
-            isDrinking = true;
-            Debug.Log("Drinking the potion...");
-
-            if (holdAnimator != null)
+            Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
+            if (liquid != null && liquid.gameObject.activeSelf && liquid.fillAmount >= 0.5f)
             {
-                holdAnimator.SetTrigger("Drink");
-            }
+                isDrinking = true;
+                Debug.Log("Drinking the potion...");
 
-            // Gradually increase the potion's fill amount while drinking
-            while (liquid.fillAmount < 1f)
+                if (holdAnimator != null)
+                {
+                    holdAnimator.SetTrigger("Drink");
+                }
+
+                // Gradually increase the potion's fill amount while drinking
+                while (liquid.fillAmount < 1f)
+                {
+                    liquid.SetFillAmount(liquid.fillAmount + 0.03f); // Increase the fill amount gradually
+                    yield return new WaitForSeconds(0.1f); // Slow down the drinking process
+                }
+
+                // Ensure the fill amount doesn't exceed 1
+                liquid.SetFillAmount(1f);
+
+                // Wait for the animation to finish
+                yield return new WaitForSeconds(3f); // Adjust as necessary for the drink animation
+
+                // Destroy the held item after drinking
+                Destroy(heldItem);
+                heldItem = null;
+                isDrinking = false;
+            }
+            else
             {
-                liquid.SetFillAmount(liquid.fillAmount + 0.03f); // Increase the fill amount gradually
-                yield return new WaitForSeconds(0.1f); // Slow down the drinking process
+                Debug.Log("Potion is not ready to be drunk!");
             }
-
-            // Ensure the fill amount doesn't exceed 1
-            liquid.SetFillAmount(1f);
-
-            // Wait for the animation to finish
-            yield return new WaitForSeconds(3f); // Adjust as necessary for the drink animation
-
-            // Destroy the held item after drinking
-            Destroy(heldItem);
-            heldItem = null;
-            isDrinking = false;
         }
-        else
+    }
+
+    public bool IsDrinking()
+    {
+        return isDrinking;
+    }
+
+    private void DrainLiquid()
+    {
+        if (heldItem != null)
         {
-            Debug.Log("Potion is not ready to be drunk!");
+            Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
+            if (liquid != null)
+            {
+                liquid.SetFillAmount(1f); // We'll add this SetFillAmount function to the Liquid script
+            }
         }
     }
 }
 
-
-
-
-public bool IsDrinking()
-{
-    return isDrinking;
-}
-
-private void DrainLiquid()
-{
-    if (heldItem != null)
-    {
-        Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
-        if (liquid != null)
-        {
-            liquid.SetFillAmount(1f); // We'll add this SetFillAmount function to the Liquid script
-        }
-    }
-}
-
-} 
 
 
 
