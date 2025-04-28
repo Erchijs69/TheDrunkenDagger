@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -2190133902959710743}
   - component: {fileID: -2808210213017240089}
   - component: {fileID: -6163895026779383523}
+  - component: {fileID: -246718051589272154}
   m_Layer: 8
   m_Name: RedIngredient
   m_TagString: Ingredient
@@ -147,3 +148,17 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-246718051589272154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746446336472256962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29dd1cf52d89e8041ac2ffe562976363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: Red Heart
+  itemPrefab: {fileID: 1746446336472256962}

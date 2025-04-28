@@ -20,18 +20,22 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private bool isGrounded;
     private bool isCrouching;
+    public bool IsCrouching => isCrouching;
 
     private float originalHeight;
     private float crouchHeight = 0.5f;
     private float crouchTransitionTime = 0.1f;
 
-    // Water floating
+   
     private bool isInWater = false;
     private float waterSurfaceY;
-    public float floatHeight = 1.0f; // Increased to keep player higher in water
+    public float floatHeight = 1.0f; 
 
-    // Slope support
-    public float slopeLimit = 75f; // Higher slope limit
+    
+    public float slopeLimit = 75f; 
+
+    public ItemPickup itemPickup;
+
 
     void Start()
     {
@@ -69,10 +73,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         float moveSpeed = isCrouching ? crouchSpeed : speed;
+
         if (isInWater)
         {
-            moveSpeed *= 0.5f; // Slower movement in water
+            moveSpeed *= 0.5f; 
         }
+
+        if (itemPickup != null && itemPickup.IsDrinking())
+        {
+            moveSpeed *= 0.3f; 
+        }
+
 
         Vector3 move = transform.right * x + transform.forward * z;
         controller.Move(move * moveSpeed * Time.deltaTime);

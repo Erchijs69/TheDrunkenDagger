@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c41ba1ddc8628f488bb0744f9315528, type: 3}
   m_Name: Pick Up Bottle
   m_EditorClassIdentifier: 
-  questName: Bottle Time
-  questDescription: Pick up the bottle nested on the small table
+  questName: Potions Or Cart
+  questDescription: Go upstairs and make something, test the item placement or go
+    outside, find the Cart interact (e) and go to the next scene
   isComplete: 0
   questType: 2
   targetObject: {fileID: 642397257997661189, guid: 99dc82faea77a6448831a5968a81926d,

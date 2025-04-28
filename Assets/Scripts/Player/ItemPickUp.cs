@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections; 
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,10 +6,10 @@ public class ItemPickup : MonoBehaviour
 {
     public Transform holdPosition;
     public LayerMask itemLayer;
-    public LayerMask surfaceLayer;  
+    public LayerMask surfaceLayer;
     public float pickupRange = 3f;
-    public float yOffset = 0.5f;  
-    public float maxAngle = 30f;  
+    public float yOffset = 0.5f;
+    public float maxAngle = 30f;
     public float placementHeightOffset = 0.1f;
     public float maxPlaceDistance = 5f;
 
@@ -17,19 +17,32 @@ public class ItemPickup : MonoBehaviour
     private Rigidbody heldItemRb;
     private Collider itemCollider;
 
-    private GameObject ghostItem;  
-    private Material ghostMaterial;    
+    private GameObject ghostItem;
+    private Material ghostMaterial;
 
     private Vector3 originalItemPosition;
+
+    private Animator holdAnimator;
+    private bool isDrinking = false;
+    private List<GameObject> placedIngredients = new List<GameObject>();
 
     void Start()
     {
         ghostMaterial = new Material(Shader.Find("Standard"));
-        ghostMaterial.color = new Color(1f, 1f, 1f, 0.3f);  
+        ghostMaterial.color = new Color(1f, 1f, 1f, 0.3f);
+
+        holdAnimator = holdPosition.GetComponent<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
+        if (isDrinking)
+        {
+            if (ghostItem != null)
+                ghostItem.SetActive(false); // hide ghost while drinking
+            return; // skip all input while drinking
+        }
+
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (heldItem == null)
@@ -38,32 +51,49 @@ public class ItemPickup : MonoBehaviour
                 TryPlaceItem();
         }
 
+        if (Input.GetKeyDown(KeyCode.R) && heldItem != null)
+        {
+            StartCoroutine(DrinkPotion());
+        }
+
         if (heldItem != null)
             UpdateGhostItemPosition();
     }
 
-    void TryPickupItem()
-{
-    Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-    RaycastHit hit;
 
-    if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
+     void TryPickupItem()
     {
-        heldItem = hit.collider.gameObject;
-        heldItemRb = heldItem.GetComponent<Rigidbody>();
-        itemCollider = heldItem.GetComponent<Collider>();
+        if (heldItem != null) return; // Don't pick up if already holding
 
-        heldItemRb.isKinematic = true;
-        heldItem.transform.SetParent(holdPosition);
-        heldItem.transform.localPosition = Vector3.zero;
-        heldItem.transform.localRotation = Quaternion.identity;
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        RaycastHit hit;
 
-        originalItemPosition = heldItem.transform.position;
+        if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
+        {
+            GameObject item = hit.collider.gameObject;
 
-        CreateGhostItem();
+            // Check if the item is already placed in the potion system
+            if (placedIngredients.Contains(item))
+            {
+                Debug.Log("Cannot pick up placed ingredient.");
+                return; // Do nothing if the ingredient is already placed
+            }
+
+            heldItem = item;
+            heldItemRb = heldItem.GetComponent<Rigidbody>();
+            itemCollider = heldItem.GetComponent<Collider>();
+
+            heldItem.SetActive(true);
+            heldItemRb.isKinematic = true;
+            heldItem.transform.SetParent(holdPosition);
+            heldItem.transform.localPosition = Vector3.zero;
+            heldItem.transform.localRotation = Quaternion.identity;
+
+            originalItemPosition = heldItem.transform.position;
+
+            CreateGhostItem();
+        }
     }
-}
-
 
     void CreateGhostItem()
     {
@@ -94,7 +124,7 @@ public class ItemPickup : MonoBehaviour
 
             if (Vector3.Angle(surfaceNormal, Vector3.up) <= maxAngle)
             {
-                Vector3 targetPosition = hit.point - (Vector3.up * yOffset);  
+                Vector3 targetPosition = hit.point - (Vector3.up * yOffset);
                 ghostItem.transform.position = targetPosition;
                 ghostItem.transform.rotation = Quaternion.identity;
                 ghostItem.SetActive(true);
@@ -132,16 +162,122 @@ public class ItemPickup : MonoBehaviour
         }
 
         heldItem.transform.SetParent(null);
-        heldItem.transform.position = ghostItem.transform.position + (Vector3.up * placementHeightOffset);
+        heldItem.transform.position = ghostItem.transform.position;
         heldItem.transform.rotation = Quaternion.identity;
 
         heldItemRb.isKinematic = false;
 
         Destroy(ghostItem);
+
         Debug.Log("Item placed at: " + heldItem.transform.position);
+
+        // If it's an ingredient, mark it as placed
+        if (heldItem.CompareTag("Ingredient"))
+        {
+            placedIngredients.Add(heldItem);
+        }
 
         heldItem = null;
     }
+
+    public void SpawnItemToHand(GameObject item)
+    {
+        if (heldItem != null)
+        {
+            Debug.LogWarning("Already holding an item!");
+            return;
+        }
+
+        heldItem = item;
+        heldItemRb = heldItem.GetComponent<Rigidbody>();
+        itemCollider = heldItem.GetComponent<Collider>();
+
+        heldItem.SetActive(true);
+        heldItemRb.isKinematic = true;
+        heldItem.transform.SetParent(holdPosition);
+        heldItem.transform.localPosition = Vector3.zero;
+        heldItem.transform.localRotation = Quaternion.identity;
+
+        CreateGhostItem();
+        Debug.Log("Spawned item to hand: " + item.name);
+    }
+
+    public bool IsHoldingItem()
+    {
+        return heldItem != null;
+    }
+
+    private IEnumerator DrinkPotion()
+{
+    if (heldItem != null)
+    {
+        Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
+        if (liquid != null && liquid.gameObject.activeSelf && liquid.fillAmount >= 0.5f)
+        {
+            isDrinking = true;
+            Debug.Log("Drinking the potion...");
+
+            if (holdAnimator != null)
+            {
+                holdAnimator.SetTrigger("Drink");
+            }
+
+            // Gradually increase the potion's fill amount while drinking
+            while (liquid.fillAmount < 1f)
+            {
+                liquid.SetFillAmount(liquid.fillAmount + 0.03f); // Increase the fill amount gradually
+                yield return new WaitForSeconds(0.1f); // Slow down the drinking process
+            }
+
+            // Ensure the fill amount doesn't exceed 1
+            liquid.SetFillAmount(1f);
+
+            // Wait for the animation to finish
+            yield return new WaitForSeconds(3f); // Adjust as necessary for the drink animation
+
+            // Destroy the held item after drinking
+            Destroy(heldItem);
+            heldItem = null;
+            isDrinking = false;
+        }
+        else
+        {
+            Debug.Log("Potion is not ready to be drunk!");
+        }
+    }
 }
+
+
+
+
+public bool IsDrinking()
+{
+    return isDrinking;
+}
+
+private void DrainLiquid()
+{
+    if (heldItem != null)
+    {
+        Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
+        if (liquid != null)
+        {
+            liquid.SetFillAmount(1f); // We'll add this SetFillAmount function to the Liquid script
+        }
+    }
+}
+
+} 
+
+
+
+
+
+
+
+
+
+
+
 
 

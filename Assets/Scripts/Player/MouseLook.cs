@@ -9,19 +9,15 @@ public class MouseLook : MonoBehaviour
 
     public bool canLook = true;
 
-    // Custom cursor properties
-    public Texture2D customCursor; // Drag your custom cursor texture here in the Inspector
-    public Vector2 hotSpot = new Vector2(16, 16); // Set the hotspot (the point on the cursor that will act as the pointer)
+    public Texture2D customCursor;
+    public Vector2 hotSpot = new Vector2(16, 16);
 
     float xRotation = 0f;
 
     void Start()
     {
-        // Hide the default system cursor
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-
-        // Set the custom cursor
         Cursor.SetCursor(customCursor, hotSpot, CursorMode.Auto);
     }
 
@@ -38,5 +34,16 @@ public class MouseLook : MonoBehaviour
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         playerBody.Rotate(Vector3.up * mouseX);
     }
+
+    public void FreezeLook(bool freeze)
+    {
+        canLook = !freeze;
+    }
 }
+
+
+
+
+
+
 
