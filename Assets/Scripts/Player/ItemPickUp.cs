@@ -25,16 +25,30 @@ public class ItemPickup : MonoBehaviour
     private Animator holdAnimator;
     private bool isDrinking = false;
 
+    public PlayerMovement playerMovement;
+
+    public PotionSystem potionSystem;
+
+    public PlayerBuffs playerBuffs; // Drag Player in Inspector or find in Start()
+
     void Start()
     {
         ghostMaterial = new Material(Shader.Find("Standard"));
         ghostMaterial.color = new Color(1f, 1f, 1f, 0.3f);
 
         holdAnimator = holdPosition.GetComponent<Animator>();
+
+        if (potionSystem == null)
+        potionSystem = FindObjectOfType<PotionSystem>(); // Automatically find the PotionSystem
     }
 
     private void Update()
     {
+        if (playerMovement != null && playerMovement.IsStealthed)
+        {
+            return; // Don't allow item pickup if stealth mode is active
+        }
+
         if (isDrinking)
         {
             if (ghostItem != null)
@@ -67,24 +81,31 @@ public class ItemPickup : MonoBehaviour
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
-        {
-            GameObject item = hit.collider.gameObject;
+{
+    GameObject item = hit.collider.gameObject;
 
-            // Allow picking up all items, including ingredients
-            heldItem = item;
-            heldItemRb = heldItem.GetComponent<Rigidbody>();
-            itemCollider = heldItem.GetComponent<Collider>();
+    // Remove this line:
+    // GameObject item = hit.collider.gameObject;
 
-            heldItem.SetActive(true);
-            heldItemRb.isKinematic = true;
-            heldItem.transform.SetParent(holdPosition);
-            heldItem.transform.localPosition = Vector3.zero;
-            heldItem.transform.localRotation = Quaternion.identity;
+    if (!hit.collider.isTrigger) 
+    {
+        // Use the already declared 'item'
+        heldItem = item;
+        heldItemRb = heldItem.GetComponent<Rigidbody>();
+        itemCollider = heldItem.GetComponent<Collider>();
 
-            originalItemPosition = heldItem.transform.position;
+        heldItem.SetActive(true);
+        heldItemRb.isKinematic = true;
+        heldItem.transform.SetParent(holdPosition);
+        heldItem.transform.localPosition = Vector3.zero;
+        heldItem.transform.localRotation = Quaternion.identity;
 
-            CreateGhostItem();
-        }
+        originalItemPosition = heldItem.transform.position;
+
+        CreateGhostItem();
+    }
+}
+
     }
 
     void CreateGhostItem()
@@ -194,15 +215,24 @@ public class ItemPickup : MonoBehaviour
     }
 
     private IEnumerator DrinkPotion()
+{
+    if (heldItem != null)
     {
-        if (heldItem != null)
+        // Check if the held item is a potion and if it's not already consumed
+        Potion potion = heldItem.GetComponent<Potion>();
+        if (potion != null && !potion.HasBeenConsumed)
         {
             Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
             if (liquid != null && liquid.gameObject.activeSelf && liquid.fillAmount >= 0.5f)
             {
-                isDrinking = true;
+                isDrinking = true; // Mark that we are drinking the potion
+
                 Debug.Log("Drinking the potion...");
 
+                // Show the effect name UI before drinking
+                potion.ShowEffectName();
+
+                // Start the drinking animation (if available)
                 if (holdAnimator != null)
                 {
                     holdAnimator.SetTrigger("Drink");
@@ -211,27 +241,51 @@ public class ItemPickup : MonoBehaviour
                 // Gradually increase the potion's fill amount while drinking
                 while (liquid.fillAmount < 1f)
                 {
-                    liquid.SetFillAmount(liquid.fillAmount + 0.03f); // Increase the fill amount gradually
-                    yield return new WaitForSeconds(0.1f); // Slow down the drinking process
+                    liquid.SetFillAmount(liquid.fillAmount + 0.03f); // Gradually fill the potion
+                    yield return new WaitForSeconds(0.1f); // Slow the drinking process
                 }
 
                 // Ensure the fill amount doesn't exceed 1
                 liquid.SetFillAmount(1f);
 
-                // Wait for the animation to finish
-                yield return new WaitForSeconds(3f); // Adjust as necessary for the drink animation
+                // Wait for the animation to finish (3 seconds or adjust as necessary)
+                yield return new WaitForSeconds(3f);
+
+                // Apply the potion effect after drinking
+                ApplyPotionEffect(potion);
+
+                // Hide the effect name UI after drinking
+                potion.HideEffectName();
+
+                // Mark the potion as consumed
+                potion.Consume();
 
                 // Destroy the held item after drinking
                 Destroy(heldItem);
                 heldItem = null;
-                isDrinking = false;
+
+                isDrinking = false; // Set the drinking flag back to false
             }
             else
             {
-                Debug.Log("Potion is not ready to be drunk!");
+                Debug.Log("Potion is not ready to be drunk! Make sure it's filled.");
             }
         }
+        else
+        {
+            Debug.Log("Potion is either missing or has already been consumed.");
+        }
     }
+}
+
+
+private void ApplyPotionEffect(Potion potion)
+{
+    if (playerBuffs != null)
+        playerBuffs.ApplyBuff(potion.potionEffectName);
+    else
+        Debug.LogWarning("PlayerBuffs reference is missing!");
+}
 
     public bool IsDrinking()
     {
@@ -249,8 +303,8 @@ public class ItemPickup : MonoBehaviour
             }
         }
     }
-}
 
+}
 
 
 

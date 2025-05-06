@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -1174765001506915234}
   - component: {fileID: -7942403645053310715}
   m_Layer: 8
-  m_Name: YellowIngredient
+  m_Name: Yellow
   m_TagString: Ingredient
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientColor: {r: 1, g: 0.99999994, b: 0, a: 0}
+  ingredientType: Yellow
 --- !u!54 &3114123989876951254
 Rigidbody:
   m_ObjectHideFlags: 0

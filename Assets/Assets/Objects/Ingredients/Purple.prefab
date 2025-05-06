@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2696537669170985364}
   - component: {fileID: -2916279464635044141}
   m_Layer: 8
-  m_Name: PurpleIngredient
+  m_Name: Purple
   m_TagString: Ingredient
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ingredientColor: {r: 0.42352945, g: 0.11764707, b: 0.6627451, a: 0}
+  ingredientType: Purple
 --- !u!54 &1310000168440881172
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -25,6 +25,7 @@ public class InventoryManager : MonoBehaviour
     public int ItemCount => inventoryItems.Count;
     public bool IsInventoryOpen => inventoryOpen;
 
+    public PlayerMovement playerMovement;
     
 
     [System.Serializable]
@@ -38,6 +39,10 @@ public class InventoryManager : MonoBehaviour
 
     private List<GameObject> slotObjects = new List<GameObject>();
 
+    void Start()
+    {
+        playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
+    }
     void Awake()
     {
         if (Instance == null)
@@ -50,7 +55,7 @@ public class InventoryManager : MonoBehaviour
 
     void Update()
 {
-    if ((Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.I)) && !itemPickup.IsDrinking())
+     if ((Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.I)) && !itemPickup.IsDrinking() && !playerMovement.IsStealthed)
     {
         ToggleInventory();
     }
@@ -119,7 +124,6 @@ public class InventoryManager : MonoBehaviour
 
     ToggleInventory();
 }
-
 }
 
 

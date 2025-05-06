@@ -11,25 +11,29 @@ public class JournalUI : MonoBehaviour
 
     private bool isOpen = false;
 
+    public PlayerMovement playerMovement;
+
     void Start()
     {
         journalObject.SetActive(false);          // Hide journal on start
         questTextContainer.SetActive(false);     // Hide text on start
+        playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
+
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.J) && !playerMovement.IsStealthed)
+    {
+        if (!isOpen)
         {
-            if (!isOpen)
-            {
-                StartCoroutine(OpenJournal());
-            }
-            else
-            {
-                CloseJournal();
-            }
+            StartCoroutine(OpenJournal());
         }
+        else
+        {
+            CloseJournal();
+        }
+    }
     }
 
     IEnumerator OpenJournal()

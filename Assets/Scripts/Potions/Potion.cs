@@ -8,10 +8,18 @@ public class Potion : MonoBehaviour
     public GameObject effectNameCanvas;
     public TMPro.TextMeshProUGUI effectNameText;
 
+    public bool HasBeenConsumed { get; private set; } = false;
+
     private void Start()
     {
         if (effectNameCanvas != null)
             effectNameCanvas.SetActive(false); // Hide at start
+    }
+
+    public void Consume()
+    {
+        HasBeenConsumed = true; // Mark as consumed
+        Debug.Log($"Potion {potionEffectName} consumed!");
     }
 
     public void ShowEffectName()
@@ -28,5 +36,9 @@ public class Potion : MonoBehaviour
         if (effectNameCanvas != null)
             effectNameCanvas.SetActive(false);
     }
-    
 }
+
+
+
+
+

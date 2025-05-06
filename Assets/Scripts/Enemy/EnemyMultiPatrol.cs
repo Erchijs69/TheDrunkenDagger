@@ -18,8 +18,9 @@ public class EnemyMultiPatrol : BaseEnemy
     private bool isWaiting = false;
     private bool isChasing = false;
 
-    void Start()
+     protected override void Start()
     {
+        base.Start();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = patrolSpeed;
         if (waypoints.Length > 0)
@@ -78,10 +79,32 @@ public class EnemyMultiPatrol : BaseEnemy
     }
 
     void OnTriggerEnter(Collider other)
+{
+    if (isChasing && other.CompareTag("Player"))
     {
-        if (isChasing && other.CompareTag("Player"))
+        PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
+        if (playerMovement != null && !playerMovement.IsStealthed && !playerMovement.IsSmall)
         {
             RestartScene();
         }
     }
 }
+
+
+
+      private void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+
+        // Draw patrol waypoints as small spheres
+        if (waypoints != null)
+        {
+            Gizmos.color = Color.cyan;
+            foreach (var waypoint in waypoints)
+            {
+                Gizmos.DrawSphere(waypoint.position, 0.5f);
+            }
+        }
+    }
+}
+

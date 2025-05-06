@@ -5,12 +5,28 @@ using System.Collections;
 public abstract class BaseEnemy : MonoBehaviour, IInteractable
 {
     public Transform player;
-    public GameObject daggerObject; // Assign this in Inspector
+    public GameObject daggerObject;
     public float detectionRange = 10f;
     public float fieldOfView = 120f;
 
+    [Header("Detection Gizmos")]
+    public Color detectionRangeColor = Color.green;
+    public Color fieldOfViewColor = Color.yellow;
+
+    public string waterLayerName = "Water";
+
     protected bool playerDetected = false;
     protected float lastSeenTime;
+
+    protected PlayerMovement playerMovement;
+
+    protected virtual void Start()
+    {
+        if (player != null)
+        {
+            playerMovement = player.GetComponent<PlayerMovement>();
+        }
+    }
 
     protected virtual void Update()
     {
@@ -18,30 +34,41 @@ public abstract class BaseEnemy : MonoBehaviour, IInteractable
     }
 
     protected virtual void DetectPlayer()
+{
+    if (player == null || playerMovement == null) return;
+
+    // Ignore player if stealthed OR small
+    if (playerMovement.IsStealthed || playerMovement.IsSmall)
     {
-        if (player == null) return;
+        playerDetected = false;
+        OnPlayerLost();
+        return;
+    }
 
-        Vector3 dirToPlayer = player.position - transform.position;
-        float distance = dirToPlayer.magnitude;
-        float angle = Vector3.Angle(transform.forward, dirToPlayer);
+    Vector3 dirToPlayer = player.position - transform.position;
+    float distance = dirToPlayer.magnitude;
+    float angle = Vector3.Angle(transform.forward, dirToPlayer);
 
-        if (distance <= detectionRange && angle <= fieldOfView / 2)
+    int waterLayer = LayerMask.NameToLayer(waterLayerName);
+    int ignoreMask = ~(1 << waterLayer);
+
+    if (distance <= detectionRange && angle <= fieldOfView / 2)
+    {
+        if (Physics.Linecast(transform.position, player.position, out RaycastHit hit, ignoreMask))
         {
-            if (Physics.Linecast(transform.position, player.position, out RaycastHit hit))
+            if (hit.collider.gameObject == player.gameObject)
             {
-                if (hit.collider.gameObject == player.gameObject)
-                {
-                    playerDetected = true;
-                    OnPlayerDetected();
-                }
+                playerDetected = true;
+                OnPlayerDetected();
+                return;
             }
         }
-        else
-        {
-            playerDetected = false;
-            OnPlayerLost();
-        }
     }
+
+    playerDetected = false;
+    OnPlayerLost();
+}
+
 
     protected virtual void OnPlayerDetected() { }
     protected virtual void OnPlayerLost() { }
@@ -52,24 +79,21 @@ public abstract class BaseEnemy : MonoBehaviour, IInteractable
     }
 
     public virtual void StealthTakedown()
-{
-    PlayerStealthKill killHandler = player.GetComponent<PlayerStealthKill>();
-    if (killHandler != null)
     {
-        killHandler.ExecuteStealthKill(this);
+        PlayerStealthKill killHandler = player.GetComponent<PlayerStealthKill>();
+        if (killHandler != null)
+        {
+            killHandler.ExecuteStealthKill(this);
+        }
     }
-}
-
 
     private IEnumerator PerformTakedown()
     {
         Debug.Log($"{gameObject.name} stealth takedown initiated.");
 
-        enabled = false; // Disable enemy AI
+        enabled = false;
 
-        PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
         MouseLook mouseLook = player.GetComponentInChildren<MouseLook>();
-
         if (playerMovement != null) playerMovement.canMove = false;
         if (mouseLook != null) mouseLook.FreezeLook(true);
 
@@ -97,29 +121,50 @@ public abstract class BaseEnemy : MonoBehaviour, IInteractable
             yield return new WaitForSeconds(1f);
         }
 
-        Destroy(gameObject); // Kill the enemy
-
+        Destroy(gameObject);
         if (playerMovement != null) playerMovement.canMove = true;
         if (mouseLook != null) mouseLook.FreezeLook(false);
     }
 
     public void Interact()
-{
-    Vector3 toPlayer = player.position - transform.position;
-    float angle = Vector3.Angle(transform.forward, toPlayer);
-    float distance = toPlayer.magnitude;
-
-    PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
-
-    if (angle > 100f && distance < 2f && playerMovement != null && playerMovement.IsCrouching)
     {
-        StealthTakedown();
+        if (player == null || playerMovement == null) return;
+
+        Vector3 toPlayer = player.position - transform.position;
+        float angle = Vector3.Angle(transform.forward, toPlayer);
+        float distance = toPlayer.magnitude;
+
+        if (angle > 100f && distance < 2f && playerMovement.IsCrouching)
+        {
+            StealthTakedown();
+        }
+        else
+        {
+            Debug.Log("Takedown failed: Too visible, too far, or not crouching.");
+        }
     }
-    else
+
+    protected virtual void OnDrawGizmos()
     {
-        Debug.Log("Takedown failed: Too visible, too far, or not crouching.");
+        Gizmos.color = detectionRangeColor;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Gizmos.color = fieldOfViewColor;
+        Vector3 leftAngle = Quaternion.Euler(0, -fieldOfView / 2, 0) * transform.forward * detectionRange;
+        Vector3 rightAngle = Quaternion.Euler(0, fieldOfView / 2, 0) * transform.forward * detectionRange;
+        Gizmos.DrawLine(transform.position, transform.position + leftAngle);
+        Gizmos.DrawLine(transform.position, transform.position + rightAngle);
+
+        if (player != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, player.position);
+        }
     }
 }
 
-}
+
+
+
+
 
