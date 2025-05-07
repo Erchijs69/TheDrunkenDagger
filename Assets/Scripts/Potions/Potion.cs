@@ -3,6 +3,7 @@ using UnityEngine;
 public class Potion : MonoBehaviour
 {
     public string potionEffectName;
+    public string potionEffectDescription; 
 
     [Header("Floating UI")]
     public GameObject effectNameCanvas;
@@ -13,14 +14,20 @@ public class Potion : MonoBehaviour
     private void Start()
     {
         if (effectNameCanvas != null)
-            effectNameCanvas.SetActive(false); // Hide at start
+            effectNameCanvas.SetActive(false);
     }
 
     public void Consume()
-    {
-        HasBeenConsumed = true; // Mark as consumed
-        Debug.Log($"Potion {potionEffectName} consumed!");
-    }
+{
+    HasBeenConsumed = true;
+    Debug.Log($"Potion {potionEffectName} consumed!");
+
+    // Disable colliders to prevent future pickup
+    Collider[] colliders = GetComponents<Collider>();
+    foreach (var col in colliders)
+        col.enabled = false;
+}
+
 
     public void ShowEffectName()
     {
@@ -37,6 +44,7 @@ public class Potion : MonoBehaviour
             effectNameCanvas.SetActive(false);
     }
 }
+
 
 
 

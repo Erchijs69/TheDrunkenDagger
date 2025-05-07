@@ -7,7 +7,6 @@ interface IInteractable
     void Interact();
 }
 
-
 public class Interactor : MonoBehaviour
 {
     public Transform InteractorSource;
@@ -19,12 +18,14 @@ public class Interactor : MonoBehaviour
     private GameObject currentHitObject;
     private Potion currentPotion;
 
-    // Direct reference to PlayerMovement
     private PlayerMovement playerMovement;
+
+    [Header("Stealth Settings")]
+    public float stealthTakedownDistance = 2f;
+
 
     void Start()
     {
-        // Assuming PlayerMovement is on the same GameObject
         playerMovement = GetComponent<PlayerMovement>();
     }
 
@@ -35,34 +36,36 @@ public class Interactor : MonoBehaviour
         RaycastHit hit;
         Potion hitPotion = null;
 
-        // Only allow interactions when not stealthed
-        if (playerMovement != null && playerMovement.IsStealthed)
+        bool isStealthed = playerMovement != null && playerMovement.IsStealthed;
+
+        // Exit early if stealthed
+        if (isStealthed)
         {
-            stealthPromptUI.SetActive(false); // Optionally hide stealth prompt
-            return; // Exit early to prevent interactions in stealth mode
+            if (stealthPromptUI != null)
+                stealthPromptUI.SetActive(false);
+            return;
         }
 
-        // Raycast to detect interactable objects
         if (Physics.Raycast(ray, out hit, InteractRange, interactableLayers))
         {
             currentHitObject = hit.collider.gameObject;
             IInteractable interactable = currentHitObject.GetComponent<IInteractable>();
 
-            // Stealth detection (this part remains unchanged)
             if (interactable is BaseEnemy enemy)
-            {
-                Vector3 toPlayer = enemy.player.position - enemy.transform.position;
-                float angle = Vector3.Angle(enemy.transform.forward, toPlayer);
-                float distance = Vector3.Distance(enemy.transform.position, enemy.player.position);
+{
+    Vector3 toPlayer = enemy.player.position - enemy.transform.position;
+    float angle = Vector3.Angle(enemy.transform.forward, toPlayer);
+    float distance = Vector3.Distance(enemy.transform.position, enemy.player.position);
 
-                playerMovement = enemy.player.GetComponent<PlayerMovement>();
+    playerMovement = enemy.player.GetComponent<PlayerMovement>();
+    isStealthed = playerMovement != null && playerMovement.IsStealthed;
 
-                // Check if in stealth mode
-                if (playerMovement != null && playerMovement.IsStealthed)
-                {
-                    canTakedown = true;
-                }
-            }
+    if (!isStealthed && distance <= stealthTakedownDistance)
+    {
+        canTakedown = true;
+    }
+}
+
 
             if (Input.GetKeyDown(KeyCode.E) && interactable != null)
             {
@@ -70,11 +73,9 @@ public class Interactor : MonoBehaviour
                 Debug.Log($"Interacted with {currentHitObject.name}");
             }
 
-            // Check if it's a potion
             hitPotion = currentHitObject.GetComponent<Potion>();
         }
 
-        // Potion distance handling
         if (hitPotion != null && Vector3.Distance(transform.position, hitPotion.transform.position) <= InteractRange)
         {
             if (currentPotion != hitPotion)
@@ -92,12 +93,11 @@ public class Interactor : MonoBehaviour
             currentPotion = null;
         }
 
-        // Show stealth prompt
+        // Show stealth prompt only if not stealthed and takedown is allowed
         if (stealthPromptUI != null)
-            stealthPromptUI.SetActive(canTakedown);
+            stealthPromptUI.SetActive(!isStealthed && canTakedown);
 
-        // Item pickup (only allow if not stealthed)
-        if (InventoryManager.Instance.ItemCount >= InventoryManager.Instance.maxInventorySlots || (playerMovement != null && playerMovement.IsStealthed))
+        if (InventoryManager.Instance.ItemCount >= InventoryManager.Instance.maxInventorySlots || isStealthed)
             return;
 
         if (InventoryManager.Instance.itemPickup != null && InventoryManager.Instance.itemPickup.IsHoldingItem())
@@ -112,16 +112,12 @@ public class Interactor : MonoBehaviour
                 {
                     GameObject itemObject = itemHit.collider.gameObject;
                     InventoryManager.Instance.AddItem(itemObject);
-                    itemObject.SetActive(false); // Disable instead of destroy
+                    itemObject.SetActive(false);
                     Debug.Log($"Picked up {itemObject.name} and added to inventory.");
                 }
             }
         }
     }
-
-
-
-
 
     void OnDrawGizmos()
     {
@@ -132,3 +128,4 @@ public class Interactor : MonoBehaviour
         }
     }
 }
+

@@ -15,14 +15,19 @@ public class PlayerBuffs : MonoBehaviour
     public float swimBoostMultiplier = 2f;
     public float swimBoostDuration = 5f;
 
-    [Header("Stealth Settings")]
-    public float stealthDuration = 20f;
+    [Header("Wraith Settings")]
+    public float stealthDuration = 30f;
+
+    [Header("Stealth Buff Timer")]
+    public float stealthBuffDuration = 30f;
 
     private PlayerMovement playerMovement;
 
     private StealthScreenEffect stealthEffect;
 
     private bool isShrunk = false;
+
+    public PlayerStealthKill playerStealthKill;
 
     private void Awake()
 {
@@ -55,6 +60,10 @@ public class PlayerBuffs : MonoBehaviour
             case "Tiny Tina's Curse":
                 ApplyPermanentShrink();
                 break;    
+                
+            case "Master Assassin":
+                StartCoroutine(ApplyMasterAssassinBuff());
+                break;
 
             default:
                 Debug.LogWarning($"Buff '{buffName}' not recognized.");
@@ -142,6 +151,37 @@ public void ApplyPermanentShrink()
         Debug.Log("smoll ┗|｀O′|┛");
     }
 }
+
+public IEnumerator ApplyMasterAssassinBuff()
+{
+    Debug.Log("Master Assassin buff applied!");
+
+    // Enable fast stealth mode (affects crouch speed and kill animation speed)
+    playerMovement.EnableFastStealthMode(true);
+
+    // Adjust the kill animation speed in PlayerStealthKill
+    if (playerStealthKill != null)
+    {
+        playerStealthKill.fastStealthMode = true;
+        playerStealthKill.fastKillAnimSpeed = 2f; // Set this to whatever value you need
+    }
+
+    // Wait for the duration of the buff
+    yield return new WaitForSeconds(stealthBuffDuration);
+
+    // Disable fast stealth mode
+    playerMovement.EnableFastStealthMode(false);
+
+    // Reset the kill animation speed
+    if (playerStealthKill != null)
+    {
+        playerStealthKill.fastStealthMode = false;
+        playerStealthKill.fastKillAnimSpeed = 1f; // Reset to default speed
+    }
+
+    Debug.Log("Master Assassin buff ended!");
+}
+
 
 }
 

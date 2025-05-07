@@ -3,9 +3,14 @@ using UnityEngine;
 
 public class PlayerStealthKill : MonoBehaviour
 {
-    public GameObject daggerObject; // Assign in inspector
+    public GameObject daggerObject;
     public PlayerMovement playerMovement;
     public MouseLook mouseLook;
+
+    [Header("Fast Stealth Settings")]
+    public bool fastStealthMode = false;
+    public float fastKillAnimSpeed = 2f; // animation speed multiplier when enabled
+
 
     public void ExecuteStealthKill(BaseEnemy enemy)
     {
@@ -13,31 +18,41 @@ public class PlayerStealthKill : MonoBehaviour
     }
 
     private IEnumerator StealthKillRoutine(BaseEnemy enemy)
+{
+    if (playerMovement != null) playerMovement.canMove = false;
+    if (mouseLook != null) mouseLook.FreezeLook(true);
+
+    if (daggerObject != null)
     {
-        if (playerMovement != null) playerMovement.canMove = false;
-        if (mouseLook != null) mouseLook.FreezeLook(true);
+        daggerObject.SetActive(true);
+        Animator anim = daggerObject.GetComponent<Animator>();
+        if (anim != null)
+        {
+            float originalSpeed = anim.speed;
+            anim.speed = fastStealthMode ? fastKillAnimSpeed : 1f;
+            anim.Play("StealthKill");
 
-        if (daggerObject != null)
-        {
-            daggerObject.SetActive(true);
-            Animator anim = daggerObject.GetComponent<Animator>();
-            if (anim != null)
-            {
-                anim.Play("StealthKill");
-                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
-            }
-            daggerObject.SetActive(false);
-        }
-        else
-        {
-            Debug.LogWarning("Dagger not assigned.");
-            yield return new WaitForSeconds(1f);
+            // Wait for the adjusted animation length
+            float animLength = anim.GetCurrentAnimatorStateInfo(0).length / anim.speed;
+            yield return new WaitForSeconds(animLength);
+
+            anim.speed = originalSpeed;
         }
 
-        Destroy(enemy.gameObject); // Kill the enemy
-
-        if (playerMovement != null) playerMovement.canMove = true;
-        if (mouseLook != null) mouseLook.FreezeLook(false);
+        daggerObject.SetActive(false);
     }
+    else
+    {
+        Debug.LogWarning("Dagger not assigned.");
+        yield return new WaitForSeconds(1f);
+    }
+
+    Destroy(enemy.gameObject);
+
+    if (playerMovement != null) playerMovement.canMove = true;
+    if (mouseLook != null) mouseLook.FreezeLook(false);
 }
+
+}
+
 

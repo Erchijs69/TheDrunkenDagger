@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -26,7 +27,6 @@ public class InventoryManager : MonoBehaviour
     public bool IsInventoryOpen => inventoryOpen;
 
     public PlayerMovement playerMovement;
-    
 
     [System.Serializable]
     public class ItemDatabaseEntry
@@ -41,8 +41,9 @@ public class InventoryManager : MonoBehaviour
 
     void Start()
     {
-        playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
+        playerMovement = FindObjectOfType<PlayerMovement>();
     }
+
     void Awake()
     {
         if (Instance == null)
@@ -54,13 +55,12 @@ public class InventoryManager : MonoBehaviour
     }
 
     void Update()
-{
-     if ((Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.I)) && !itemPickup.IsDrinking() && !playerMovement.IsStealthed)
     {
-        ToggleInventory();
+        if ((Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.I)) && !itemPickup.IsDrinking() && !playerMovement.IsStealthed)
+        {
+            ToggleInventory();
+        }
     }
-}
-
 
     public void ToggleInventory()
     {
@@ -73,58 +73,89 @@ public class InventoryManager : MonoBehaviour
 
         if (mouseLook != null)
             mouseLook.FreezeLook(inventoryOpen);
+
+        if (!inventoryOpen)
+        InventoryTooltip.Instance.HideTooltip(); // 👈 Add this
     }
 
     public void AddItem(GameObject item)
-{
-    if (inventoryItems.Count >= maxInventorySlots)
-        return;
+    {
+        if (inventoryItems.Count >= maxInventorySlots)
+            return;
 
-    inventoryItems.Add(item);
-    item.SetActive(false);
-    item.transform.SetParent(player.transform); // Parent under player
-    RefreshInventoryUI();
-}
+        inventoryItems.Add(item);
+        item.SetActive(false);
+        item.transform.SetParent(player.transform);
+        RefreshInventoryUI();
+    }
 
     private void RefreshInventoryUI()
-{
-    foreach (GameObject slot in slotObjects)
-        Destroy(slot);
-    slotObjects.Clear();
-
-    foreach (GameObject item in inventoryItems)
     {
-        GameObject slot = Instantiate(slotPrefab, slotParent);
-        slotObjects.Add(slot);
+        foreach (GameObject slot in slotObjects)
+            Destroy(slot);
+        slotObjects.Clear();
 
-        TextMeshProUGUI text = slot.GetComponentInChildren<TextMeshProUGUI>();
-        text.text = item.name;
+        foreach (GameObject item in inventoryItems)
+        {
+            GameObject slot = Instantiate(slotPrefab, slotParent);
+            slotObjects.Add(slot);
 
-        Button button = slot.GetComponent<Button>();
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => OnInventorySlotClicked(item));
+            TextMeshProUGUI text = slot.GetComponentInChildren<TextMeshProUGUI>();
+
+            Potion potion = item.GetComponent<Potion>();
+            string description = "";
+            if (potion != null && !string.IsNullOrEmpty(potion.potionEffectName))
+            {
+                text.text = potion.potionEffectName;
+                description = potion.potionEffectDescription;
+            }
+            else
+            {
+                text.text = item.name;
+            }
+
+            Button button = slot.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => OnInventorySlotClicked(item));
+
+            // Tooltip Hover Events
+            EventTrigger trigger = slot.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry entryEnter = new EventTrigger.Entry();
+            entryEnter.eventID = EventTriggerType.PointerEnter;
+            entryEnter.callback.AddListener((data) =>
+            {
+                if (!string.IsNullOrEmpty(description))
+                    InventoryTooltip.Instance.ShowTooltip(description, Input.mousePosition);
+            });
+
+            EventTrigger.Entry entryExit = new EventTrigger.Entry();
+            entryExit.eventID = EventTriggerType.PointerExit;
+            entryExit.callback.AddListener((data) =>
+            {
+                InventoryTooltip.Instance.HideTooltip();
+            });
+
+            trigger.triggers.Add(entryEnter);
+            trigger.triggers.Add(entryExit);
+        }
     }
-}
-
 
     public void OnInventorySlotClicked(GameObject item)
-{
-    // Only proceed if no item is being held
-    if (itemPickup.IsHoldingItem()) 
     {
-        Debug.Log("Cannot interact with inventory while holding an item.");
-        return; // Skip any inventory interactions
+        if (itemPickup.IsHoldingItem())
+        {
+            Debug.Log("Cannot interact with inventory while holding an item.");
+            return;
+        }
+
+        itemPickup.SpawnItemToHand(item);
+        inventoryItems.Remove(item);
+        RefreshInventoryUI();
+        ToggleInventory();
     }
-
-    itemPickup.SpawnItemToHand(item);
-
-    // Remove item from inventory and refresh UI
-    inventoryItems.Remove(item);
-    RefreshInventoryUI();
-
-    ToggleInventory();
 }
-}
+
 
 
 

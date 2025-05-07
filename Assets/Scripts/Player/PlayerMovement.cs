@@ -63,6 +63,11 @@ public class PlayerMovement : MonoBehaviour
     private float originalSpeed;
     private float originalJumpHeight;
 
+    [Header("Stealth Boost")]
+    public bool fastStealthMode = false;
+    public float fastCrouchSpeed = 8f;
+
+
     void Awake()
     {
         // Ensure only one instance exists
@@ -117,8 +122,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    float baseSpeed = isCrouching ? crouchSpeed : speed;
-    float moveSpeed = baseSpeed * speedMultiplier;
+    float baseSpeed = isCrouching ? (fastStealthMode ? fastCrouchSpeed : crouchSpeed) : speed;
+    float moveSpeed = (isCrouching ? fastStealthMode ? fastCrouchSpeed : crouchSpeed : speed) * speedMultiplier;
 
     if (itemPickup != null && itemPickup.IsDrinking())
     {
@@ -268,6 +273,13 @@ public class PlayerMovement : MonoBehaviour
         IsSmall = !IsSmall;
         Debug.Log("Toggled IsSmall. Now: " + IsSmall);
     }
+
+    public void EnableFastStealthMode(bool enable)
+{
+    fastStealthMode = enable;
+    Debug.Log($"Fast stealth mode: {enable}");
+}
+
 }
 
 
