@@ -130,7 +130,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d6e9753fc8b19a42a48e451f0130e5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: Scene2
+  teleportTarget: {fileID: 4824830399194184646, guid: 56d1abaff1c428d4da3a02303af8cc11,
+    type: 3}
+  newSkyboxMaterial: {fileID: 2100000, guid: adb20a227b4bb3549b5d64c5424a3725, type: 2}
 --- !u!54 &7961412455587875201
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -18,11 +18,16 @@ public class EnemyMultiPatrol : BaseEnemy
     private bool isWaiting = false;
     private bool isChasing = false;
 
-     protected override void Start()
+    private Vector3 startingPosition;
+    private Quaternion startingRotation;
+
+    protected override void Start()
     {
         base.Start();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = patrolSpeed;
+        startingPosition = transform.position;
+        startingRotation = transform.rotation;
         if (waypoints.Length > 0)
             agent.SetDestination(waypoints[currentWaypointIndex].position);
     }
@@ -79,32 +84,29 @@ public class EnemyMultiPatrol : BaseEnemy
     }
 
     void OnTriggerEnter(Collider other)
+    {
+        if (isChasing)
+        {
+            CheckPlayerDeath(other);
+        }
+    }
+
+public void ResetEnemy()
 {
-    if (isChasing && other.CompareTag("Player"))
-    {
-        PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
-        if (playerMovement != null && !playerMovement.IsStealthed && !playerMovement.IsSmall)
-        {
-            RestartScene();
-        }
-    }
+    StopAllCoroutines();
+    isChasing = false;
+    isWaiting = false;
+    currentWaypointIndex = 0;
+    direction = 1;
+
+    transform.position = startingPosition;
+    transform.rotation = startingRotation;
+
+    agent.ResetPath();
+    agent.speed = patrolSpeed;
+
+    if (waypoints.Length > 0)
+        agent.SetDestination(waypoints[currentWaypointIndex].position);
 }
-
-
-
-      private void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
-
-        // Draw patrol waypoints as small spheres
-        if (waypoints != null)
-        {
-            Gizmos.color = Color.cyan;
-            foreach (var waypoint in waypoints)
-            {
-                Gizmos.DrawSphere(waypoint.position, 0.5f);
-            }
-        }
-    }
 }
 

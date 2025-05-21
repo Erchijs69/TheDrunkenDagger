@@ -7,6 +7,11 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
     public static PlayerMovement Instance;
 
+    private GameManager gameManager;
+
+
+    private PlayerBuffs playerBuffs;
+
     public float speed = 12f;
     public float crouchSpeed = 6f;
     public float gravity = -9.81f;
@@ -23,6 +28,12 @@ public class PlayerMovement : MonoBehaviour
     private bool isCrouching;
     public bool IsCrouching => isCrouching;
 
+
+    public bool IsMoving { get; private set; }
+    public bool JustStoodUp { get; private set; }
+    private float stoodUpTimer = 0f;
+    private float gracePeriod = 1f;
+
     private float originalHeight;
     private float crouchHeight = 0.5f;
     private float crouchTransitionTime = 0.1f;
@@ -30,35 +41,30 @@ public class PlayerMovement : MonoBehaviour
     private bool isInWater = false;
     private float waterSurfaceY;
     public float floatHeight = 1.0f;
-    
-    // New shrunk float height for when the player is small
+
     [Header("Shrunken Water Float Height")]
-    public float shrunkFloatHeight = 0.5f; // Float height when shrunk (editable in the Inspector)
+    public float shrunkFloatHeight = 0.5f;
 
     public float slopeLimit = 75f;
-
     public ItemPickup itemPickup;
 
-    // Buffs
     private float speedMultiplier = 1f;
     private float jumpMultiplier = 1f;
 
-    // Stealth
     public bool IsStealthed { get; private set; } = false;
-
-    // small
     public bool IsSmall { get; private set; }
 
     [Header("Swimming")]
-    [Tooltip("Controls how fast the player swims. 0 = no movement, higher = faster")]
     public float swimControlSpeed = 0.1f;
 
+    
+
     [Header("Player Shrink")]
-    public bool isShrinking = false; // Toggle this in the inspector to shrink the player
-    public float shrinkDuration = 2f; // Time it takes to shrink
-    public Vector3 shrinkScale = new Vector3(0.2f, 0.2f, 0.2f); // Target scale after shrinking
-    public float reducedSpeed = 4f; // Reduced speed when the player is small
-    public float reducedJumpHeight = 1f; // Reduced jump height when the player is small
+    public bool isShrinking = false;
+    public float shrinkDuration = 2f;
+    public Vector3 shrinkScale = new Vector3(0.2f, 0.2f, 0.2f);
+    public float reducedSpeed = 4f;
+    public float reducedJumpHeight = 1f;
 
     private float originalSpeed;
     private float originalJumpHeight;
@@ -67,124 +73,160 @@ public class PlayerMovement : MonoBehaviour
     public bool fastStealthMode = false;
     public float fastCrouchSpeed = 8f;
 
-
     void Awake()
     {
-        // Ensure only one instance exists
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate instances if any
+            Destroy(gameObject); // Destroy duplicate player in new scene
         }
     }
 
+
     void Start()
     {
+        playerBuffs = GetComponent<PlayerBuffs>();
+        gameManager = GameManager.Managerinstance;
+        if (gameManager != null)
+        {
+            // Optional: let the player register itself to GameManager (if needed)
+            gameManager.player = this;
+        }
         originalHeight = controller.height;
-        originalSpeed = speed; // Store the original speed
-        originalJumpHeight = jumpHeight; // Store the original jump height
+        originalSpeed = speed;
+        originalJumpHeight = jumpHeight;
         controller.slopeLimit = slopeLimit;
     }
 
     void Update()
+    {
+        if (!canMove) return;
+
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        // ✅ Movement detection
+        IsMoving = (x != 0 || z != 0);
+
+        if (!isInWater)
+        {
+            bool crouchInput = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
+
+            if (crouchInput)
+            {
+                if (!isCrouching)
+                {
+                    StartCoroutine(ChangeCrouchState(true));
+                }
+            }
+            else
+            {
+                if (isCrouching)
+                {
+                    StartCoroutine(ChangeCrouchState(false));
+
+                    // ✅ Mark player as just stood up
+                    JustStoodUp = true;
+                    stoodUpTimer = gracePeriod;
+                }
+            }
+        }
+
+        float moveSpeed = (isCrouching ? (fastStealthMode ? fastCrouchSpeed : crouchSpeed) : speed) * speedMultiplier;
+
+        if (itemPickup != null && itemPickup.IsDrinking())
+        {
+            moveSpeed *= 0.3f;
+        }
+
+        Vector3 move = transform.right * x + transform.forward * z;
+
+        if (!isInWater)
+        {
+            controller.Move(move * moveSpeed * Time.deltaTime);
+        }
+
+        if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching && !(itemPickup != null && itemPickup.IsDrinking()))
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * jumpMultiplier * -2f * gravity);
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+
+        if (isInWater)
 {
-    if (!canMove) return;
-
-    isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-    if (isGrounded && velocity.y < 0)
+    if (playerBuffs != null && playerBuffs.isTinyTinasCurseActive)
     {
-        velocity.y = -2f;
+        // Fly above water
+        Vector3 floatPosition = transform.position;
+        float targetY = waterSurfaceY + floatHeight + 0.5f; // Slightly above water
+        floatPosition.y = Mathf.Lerp(floatPosition.y, targetY, Time.deltaTime * 5f);
+        transform.position = floatPosition;
+
+        Vector3 flyMove = move.normalized * speed * speedMultiplier * Time.deltaTime;
+        controller.Move(flyMove);
+
+        velocity.y = 0f; // Cancel gravity
     }
-
-    float x = Input.GetAxis("Horizontal");
-    float z = Input.GetAxis("Vertical");
-
-    // Prevent crouching when swimming
-    if (!isInWater) 
+    else
     {
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C))
-        {
-            if (!isCrouching)
-            {
-                StartCoroutine(ChangeCrouchState(true));
-            }
-        }
-        else
-        {
-            if (isCrouching)
-            {
-                StartCoroutine(ChangeCrouchState(false));
-            }
-        }
-    }
-
-    float baseSpeed = isCrouching ? (fastStealthMode ? fastCrouchSpeed : crouchSpeed) : speed;
-    float moveSpeed = (isCrouching ? fastStealthMode ? fastCrouchSpeed : crouchSpeed : speed) * speedMultiplier;
-
-    if (itemPickup != null && itemPickup.IsDrinking())
-    {
-        moveSpeed *= 0.3f;
-    }
-
-    Vector3 move = transform.right * x + transform.forward * z;
-
-    if (!isInWater)
-    {
-        controller.Move(move * moveSpeed * Time.deltaTime);
-    }
-
-    if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching && !(itemPickup != null && itemPickup.IsDrinking()))
-    {
-        velocity.y = Mathf.Sqrt(jumpHeight * jumpMultiplier * -2f * gravity);
-    }
-
-    velocity.y += gravity * Time.deltaTime;
-
-    // Swimming logic
-    if (isInWater)
-    {
+        // Normal swim behavior
         float waterMoveSpeed = Mathf.Max(0f, swimControlSpeed);
         Vector3 waterMovement = move.normalized * waterMoveSpeed * Time.deltaTime;
-
         controller.Move(waterMovement);
 
-        // Adjust float height for small players
         Vector3 pos = transform.position;
         float targetY = waterSurfaceY - controller.height / 2 + (IsSmall ? shrunkFloatHeight : floatHeight);
         pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * 10f);
         transform.position = pos;
     }
-    else
-    {
-        controller.Move(velocity * Time.deltaTime);
-    }
+}
+else
+{
+    controller.Move(velocity * Time.deltaTime);
+}
 
-    // If shrinking, run the shrinking coroutine if not already running
-    if (isShrinking)
-    {
-        StartCoroutine(ShrinkPlayer());
-        isShrinking = false; // Set it to false so it only shrinks once per toggle
-    }
-    else
-    {
-        // Apply reduced values for speed and jump height when the player is small
-        if (transform.localScale == shrinkScale)
+
+        if (isShrinking)
         {
-            speed = reducedSpeed;
-            jumpHeight = reducedJumpHeight;
+            StartCoroutine(ShrinkPlayer());
+            isShrinking = false;
         }
         else
         {
-            speed = originalSpeed;
-            jumpHeight = originalJumpHeight;
+            if (transform.localScale == shrinkScale)
+            {
+                speed = reducedSpeed;
+                jumpHeight = reducedJumpHeight;
+            }
+            else
+            {
+                speed = originalSpeed;
+                jumpHeight = originalJumpHeight;
+            }
+        }
+
+        // ✅ Countdown to clear JustStoodUp
+        if (JustStoodUp)
+        {
+            stoodUpTimer -= Time.deltaTime;
+            if (stoodUpTimer <= 0f)
+            {
+                JustStoodUp = false;
+            }
         }
     }
-}
-
 
     IEnumerator ChangeCrouchState(bool crouching)
     {
@@ -217,8 +259,8 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
 
-        transform.localScale = targetScale; // Finalize scale
-        IsSmall = true; // ✅ Now the player is small
+        transform.localScale = targetScale;
+        IsSmall = true;
         Debug.Log("Player is now small: " + IsSmall);
     }
 
@@ -275,12 +317,21 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void EnableFastStealthMode(bool enable)
+    {
+        fastStealthMode = enable;
+        Debug.Log($"Fast stealth mode: {enable}");
+    }
+    
+    public void TeleportTo(Vector3 newPosition)
 {
-    fastStealthMode = enable;
-    Debug.Log($"Fast stealth mode: {enable}");
+    controller.enabled = false;  // Disable controller to safely change position
+    transform.position = newPosition;
+    controller.enabled = true;   // Re-enable controller
+    velocity = Vector3.zero;     // Reset velocity to avoid falling issues right after teleport
 }
 
 }
+
 
 
 

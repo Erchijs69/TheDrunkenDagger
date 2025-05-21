@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 4763244182804633652}
   - component: {fileID: -470771607250278183}
   - component: {fileID: 1310000168440881172}
-  - component: {fileID: 2696537669170985364}
   - component: {fileID: -2916279464635044141}
+  - component: {fileID: 4820610320778945479}
   m_Layer: 8
   m_Name: Purple
   m_TagString: Ingredient
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.55, y: 13.772, z: 12.268}
-  m_LocalScale: {x: 0.57574, y: 0.57574, z: 0.57574}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -44,7 +44,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8903571988786681823}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 1430527679300240862, guid: bb4a579796e7aeb4985f598b11a0fb5a, type: 3}
 --- !u!23 &4763244182804633652
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 37c3e65068a41874d8bcb384bee13802, type: 2}
+  - {fileID: -8274133419916619345, guid: bb4a579796e7aeb4985f598b11a0fb5a, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -128,8 +128,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &2696537669170985364
-SphereCollider:
+--- !u!114 &-2916279464635044141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8903571988786681823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29dd1cf52d89e8041ac2ffe562976363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: Shadowcap
+  itemPrefab: {fileID: 8903571988786681823}
+  itemIcon: {fileID: 21300000, guid: b57be2de4c41ae64b957fd89cd5b737a, type: 3}
+--- !u!65 &4820610320778945479
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -147,19 +162,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.6
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-2916279464635044141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8903571988786681823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29dd1cf52d89e8041ac2ffe562976363, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemName: Purple Shroom
-  itemPrefab: {fileID: 8903571988786681823}
+  m_Size: {x: 0.9291005, y: 0.101112366, z: 0.8933676}
+  m_Center: {x: 0.0025179386, y: 0.0000009536743, z: 0.14197305}

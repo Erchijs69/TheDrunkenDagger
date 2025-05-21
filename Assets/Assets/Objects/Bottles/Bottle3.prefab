@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3243123961765897470}
   - component: {fileID: -4682969998936404953}
   - component: {fileID: -2944301218195335495}
+  - component: {fileID: -4096248437594300499}
   m_Layer: 8
   m_Name: Bottle3
   m_TagString: Bottle
@@ -149,6 +150,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Bottle
   itemPrefab: {fileID: 7057685485972578442}
+  itemIcon: {fileID: 21300000, guid: 5b37c8056dc1f4a488fce6f70dde5bd0, type: 3}
+--- !u!114 &-4096248437594300499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7057685485972578442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d57564613a3c0124291197911a7442ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  potionEffectName: 
+  potionEffectDescription: 
+  neutralLiquidSprite: {fileID: 21300000, guid: 8926a2736ee95fb4793f9a7fd0ff15de,
+    type: 3}
+  effectNameCanvas: {fileID: 0}
+  effectNameText: {fileID: 0}
 --- !u!1001 &4654645373425021964
 PrefabInstance:
   m_ObjectHideFlags: 0

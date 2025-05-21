@@ -3,18 +3,18 @@ using UnityEngine.SceneManagement;
 
 public class Spear : MonoBehaviour
 {
-    void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            Debug.Log("Spear hit the player! Restarting scene...");
-            RestartScene();
+            PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
+            if (playerMovement != null && !playerMovement.IsStealthed && !playerMovement.IsSmall)
+            {
+                GameManager.Managerinstance?.PlayerDied();
+            }
         }
-    }
 
-    void RestartScene()
-    {
-        string currentScene = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(currentScene);
+        Destroy(gameObject); // optional: destroy on hit
     }
 }
+

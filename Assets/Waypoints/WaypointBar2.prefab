@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9096938082665954234
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4584020255006641567}
+  - component: {fileID: 8569298415799872973}
+  m_Layer: 0
+  m_Name: WaypointBar2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4584020255006641567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096938082665954234}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.8127115, y: -8.070931, z: 1.9384813}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8569298415799872973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096938082665954234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efb974c59f3012f41b28965a2a58f0f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueLines:
+  - speakerName: Skibidi
+    lineText: Yerp
+  - speakerName: Caspian
+    lineText: Welcome! What can I get you?
+  - speakerName: ????
+    lineText: Umm...Are you the new owner? I dont remember you.
+  - speakerName: Caspian
+    lineText: That depends... who's asking?
+  - speakerName: Phalin
+    lineText: Phalin... the names Phalin.
+  - speakerName: Caspian
+    lineText: Phalin? It's been ages! How have you been?
+  - speakerName: Phalin
+    lineText: Caspian? No way, you've changed beyond recognition.
+  - speakerName: Caspian
+    lineText: Times change, as do we all.
+  - speakerName: Phalin
+    lineText: hmm... ok nothings changed, you still have that "royalty" in you haha.
+  - speakerName: '!!!!!'
+    lineText: PLACEHOLDER
+  useStopForSeconds: 0
+  stopDuration: 3
+  triggersQuestOnEnd: 0
+  requiresQuestCompletion: 0
+  requiredQuest: {fileID: 0}

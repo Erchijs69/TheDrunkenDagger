@@ -78,16 +78,6 @@ public class ScoutEnemy : BaseEnemy
         Destroy(spear, spearLifetime);
     }
 
-    private void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
 
-        // Optionally, draw a line showing where the spear is thrown
-        if (spearSpawnPoint != null)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(spearSpawnPoint.position, spearSpawnPoint.position + spearSpawnPoint.forward * 5f);
-        }
-    }
 } 
 

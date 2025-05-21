@@ -20,6 +20,13 @@ public class Interactor : MonoBehaviour
 
     private PlayerMovement playerMovement;
 
+    public LayerMask cartLayer;
+
+    private PlayerBuffs playerBuffs;
+
+    
+
+
     [Header("Stealth Settings")]
     public float stealthTakedownDistance = 2f;
 
@@ -27,19 +34,23 @@ public class Interactor : MonoBehaviour
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        playerBuffs = GetComponent<PlayerBuffs>();
     }
 
     void Update()
     {
         bool canTakedown = false;
+        bool isPlayerTiny = playerBuffs != null && playerBuffs.isTinyTinasCurseActive;
+        bool isPlayerDetected = false;
+
         Ray ray = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
         RaycastHit hit;
         Potion hitPotion = null;
 
         bool isStealthed = playerMovement != null && playerMovement.IsStealthed;
 
-        // Exit early if stealthed
-        if (isStealthed)
+        // Early exit if stealthed or tiny, hide prompt
+        if (isStealthed || isPlayerTiny)
         {
             if (stealthPromptUI != null)
                 stealthPromptUI.SetActive(false);
@@ -52,20 +63,21 @@ public class Interactor : MonoBehaviour
             IInteractable interactable = currentHitObject.GetComponent<IInteractable>();
 
             if (interactable is BaseEnemy enemy)
-{
-    Vector3 toPlayer = enemy.player.position - enemy.transform.position;
-    float angle = Vector3.Angle(enemy.transform.forward, toPlayer);
-    float distance = Vector3.Distance(enemy.transform.position, enemy.player.position);
+            {
+                Vector3 toPlayer = enemy.player.position - enemy.transform.position;
+                float angle = Vector3.Angle(enemy.transform.forward, toPlayer);
+                float distance = Vector3.Distance(enemy.transform.position, enemy.player.position);
 
-    playerMovement = enemy.player.GetComponent<PlayerMovement>();
-    isStealthed = playerMovement != null && playerMovement.IsStealthed;
+                playerMovement = enemy.player.GetComponent<PlayerMovement>();
+                isStealthed = playerMovement != null && playerMovement.IsStealthed;
 
-    if (!isStealthed && distance <= stealthTakedownDistance)
-    {
-        canTakedown = true;
-    }
-}
+                 isPlayerDetected = enemy.PlayerDetected;
 
+                if (!isStealthed && !isPlayerDetected && !isPlayerTiny && distance <= stealthTakedownDistance)
+                {
+                    canTakedown = true;
+                }
+            }
 
             if (Input.GetKeyDown(KeyCode.E) && interactable != null)
             {
@@ -93,11 +105,12 @@ public class Interactor : MonoBehaviour
             currentPotion = null;
         }
 
-        // Show stealth prompt only if not stealthed and takedown is allowed
+        // Show stealth prompt only if takedown is allowed, player is NOT detected or tiny or stealthed
         if (stealthPromptUI != null)
-            stealthPromptUI.SetActive(!isStealthed && canTakedown);
+            stealthPromptUI.SetActive(canTakedown);
 
-        if (InventoryManager.Instance.ItemCount >= InventoryManager.Instance.maxInventorySlots || isStealthed)
+        // Early return if stealthed
+        if (isStealthed)
             return;
 
         if (InventoryManager.Instance.itemPickup != null && InventoryManager.Instance.itemPickup.IsHoldingItem())
@@ -107,6 +120,12 @@ public class Interactor : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                if (InventoryManager.Instance.ItemCount >= InventoryManager.Instance.maxInventorySlots)
+                {
+                    InventoryManager.Instance.ShowInventoryFullMessage();
+                    return;
+                }
+
                 Ray itemRay = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
                 if (Physics.Raycast(itemRay, out RaycastHit itemHit, InteractRange, itemLayer))
                 {
@@ -117,6 +136,9 @@ public class Interactor : MonoBehaviour
                 }
             }
         }
+    
+
+
     }
 
     void OnDrawGizmos()

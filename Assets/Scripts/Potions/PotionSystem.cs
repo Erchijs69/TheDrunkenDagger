@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class PotionSystem : MonoBehaviour
 {
     [SerializeField] private List<GameObject> placedIngredients = new List<GameObject>();
@@ -14,6 +15,9 @@ public class PotionSystem : MonoBehaviour
     public ItemPickup itemPickup;
     private string lastPotionKey; // Store the key of the last created potion
 
+    public Potion potion;
+
+
     public PlayerMovement playerMovement; // Add this line
 
     //JUMP BUFF
@@ -23,7 +27,7 @@ public class PotionSystem : MonoBehaviour
 
     private PlayerBuffs playerBuffs;
 
-    
+
 
     // Class to hold the potion effect data
     public class PotionEffect
@@ -47,30 +51,30 @@ public class PotionSystem : MonoBehaviour
         playerBuffs = FindObjectOfType<PlayerBuffs>();
 
         if (playerMovement == null)
-        playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
+            playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
 
         DisableIngredientSpots();
 
         //QUICK POTION EFFECTS
-        potionEffects.Add("OrangeOrangeOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeOrangeOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedRedRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanCyanCyan", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("GreenGreenGreen", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueBlueBlue", new PotionEffect("Wraith Form", "Turn into a wrait, ignoring enemies and interactions"));
         potionEffects.Add("PinkPinkPink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         //For Elf
-        potionEffects.Add("GreenYellowOrange", new PotionEffect("Natures Sense", "Substantially increases ones senses"));
-        potionEffects.Add("GreenOrangeYellow", new PotionEffect("Natures Sense", "Substantially increases ones senses"));
-        potionEffects.Add("YellowGreenOrange", new PotionEffect("Natures Sense", "Substantially increases ones senses"));
-        potionEffects.Add("YellowOrangeGreen", new PotionEffect("Natures Sense", "Substantially increases ones senses"));
-        potionEffects.Add("OrangeGreenYellow", new PotionEffect("Natures Sense", "Substantially increases ones senses"));
-        potionEffects.Add("OrangeYellowGreen", new PotionEffect("Natures Sense", "Substantially increases ones senses"));
+        potionEffects.Add("GreenYellowOrange", new PotionEffect("Natures Sense", "Rumored to substantially increase ones senses"));
+        potionEffects.Add("GreenOrangeYellow", new PotionEffect("Natures Sense", "Rumored to substantially increase ones senses"));
+        potionEffects.Add("YellowGreenOrange", new PotionEffect("Natures Sense", "Rumored to substantially increase ones senses"));
+        potionEffects.Add("YellowOrangeGreen", new PotionEffect("Natures Sense", "Rumored to substantially increase ones senses"));
+        potionEffects.Add("OrangeGreenYellow", new PotionEffect("Natures Sense", "Rumored to substantially increase ones senses"));
+        potionEffects.Add("OrangeYellowGreen", new PotionEffect("Natures Sense", "Rumored to substantially increase ones senses"));
 
         //GENERATED ONES 
         potionEffects.Add("BlueBlueCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("BlueBlueGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("BlueBlueOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("BlueBluePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BlueBluePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BlueBluePurple", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueBlueRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueBlueWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -80,7 +84,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("BlueCyanGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BlueCyanOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("BlueCyanPink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("BlueCyanPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BlueCyanPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BlueCyanRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("BlueCyanWhite", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("BlueCyanYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -94,14 +98,14 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("BlueGreenWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("BlueGreenYellow", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueOrangeBlue", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("BlueOrangeCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BlueOrangeCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BlueOrangeGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BlueOrangeOrange", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueOrangePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BlueOrangePurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BlueOrangeRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueOrangeWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("BlueOrangeYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BlueOrangeYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BluePinkBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BluePinkCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("BluePinkGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -110,18 +114,18 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("BluePinkPurple", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BluePinkRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("BluePinkWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("BluePinkYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("BluePurpleBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BluePinkYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("BluePurpleBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BluePurpleCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BluePurpleGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BluePurpleOrange", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("BluePurplePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BluePurplePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BluePurplePurple", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BluePurpleRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BluePurpleWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BluePurpleYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("BlueRedBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("BlueRedCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BlueRedCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BlueRedGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("BlueRedOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("BlueRedPink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -135,7 +139,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("BlueWhiteOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("BlueWhitePink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("BlueWhitePurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("BlueWhiteRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("BlueWhiteRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("BlueWhiteWhite", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("BlueWhiteYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("BlueYellowBlue", new PotionEffect("Speed Boost", "Increases running speed."));
@@ -152,16 +156,16 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("CyanBlueGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanBlueOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanBluePink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("CyanBluePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanBlueRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanBluePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanBlueRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanBlueWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("CyanBlueYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanBlueYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanCyanBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("CyanCyanGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanCyanOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanCyanPink", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanCyanPurple", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("CyanCyanRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanCyanRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanCyanWhite", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanCyanYellow", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("CyanGreenBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -171,27 +175,27 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("CyanGreenPink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanGreenPurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanGreenRed", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("CyanGreenWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanGreenYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanGreenWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanGreenYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanOrangeBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("CyanOrangeCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanOrangeCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanOrangeGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanOrangeOrange", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("CyanOrangePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("CyanOrangePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanOrangeRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanOrangeWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanOrangePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanOrangeRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanOrangeWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanOrangeYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanPinkBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("CyanPinkCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanPinkGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanPinkOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("CyanPinkPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanPinkPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanPinkPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("CyanPinkRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanPinkWhite", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanPinkYellow", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("CyanPurpleBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanPurpleBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanPurpleCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanPurpleGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanPurpleOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -203,26 +207,26 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("CyanRedBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanRedCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("CyanRedGreen", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("CyanRedOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanRedPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanRedPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanRedOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanRedPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanRedPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanRedRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanRedWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("CyanRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanWhiteBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("CyanWhiteCyan", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanWhiteGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("CyanWhiteOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanWhiteOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanWhitePink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanWhitePurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("CyanWhiteRed", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("CyanWhiteWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("CyanWhiteYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("CyanYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanWhiteYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("CyanYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanYellowCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanYellowGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanYellowOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("CyanYellowPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("CyanYellowPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("CyanYellowPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("CyanYellowRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("CyanYellowWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -240,14 +244,14 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("GreenCyanCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("GreenCyanGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("GreenCyanOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("GreenCyanPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenCyanPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenCyanPurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("GreenCyanRed", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("GreenCyanWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("GreenCyanYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenCyanWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("GreenCyanYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenGreenBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("GreenGreenCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("GreenGreenOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenGreenCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("GreenGreenOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenGreenPink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("GreenGreenPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("GreenGreenRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -261,7 +265,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("GreenOrangePurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("GreenOrangeRed", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("GreenOrangeWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("GreenPinkBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenPinkBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenPinkCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("GreenPinkGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("GreenPinkOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -284,17 +288,17 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("GreenRedGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("GreenRedOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("GreenRedPink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("GreenRedPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("GreenRedRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenRedPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("GreenRedRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenRedWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("GreenRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenWhiteBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("GreenWhiteCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("GreenWhiteGreen", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("GreenWhiteOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("GreenWhitePink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("GreenWhitePurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("GreenWhiteRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenWhiteRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenWhiteWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("GreenWhiteYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("GreenYellowBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -303,23 +307,23 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("GreenYellowPink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("GreenYellowPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("GreenYellowRed", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("GreenYellowWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("GreenYellowWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("GreenYellowYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeBlueBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangeBlueCyan", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("OrangeBlueGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeBlueGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeBlueOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeBluePink", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("OrangeBluePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeBluePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeBlueRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeBlueWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("OrangeBlueYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeBlueYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeCyanBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("OrangeCyanCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangeCyanGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("OrangeCyanOrange", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangeCyanPink", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("OrangeCyanPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeCyanPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeCyanRed", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("OrangeCyanWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeCyanYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -338,17 +342,17 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("OrangeOrangePurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeOrangeRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("OrangeOrangeWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("OrangeOrangeYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeOrangeYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangePinkBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangePinkCyan", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("OrangePinkGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("OrangePinkOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangePinkOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangePinkPink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangePinkPurple", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangePinkRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangePinkWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangePinkYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("OrangePurpleBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangePurpleBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangePurpleCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangePurpleGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("OrangePurpleOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -360,12 +364,12 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("OrangeRedBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangeRedCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("OrangeRedGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("OrangeRedOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeRedOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeRedPink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangeRedPurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("OrangeRedRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("OrangeRedWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("OrangeRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeRedWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("OrangeRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeWhiteBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeWhiteCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("OrangeWhiteGreen", new PotionEffect("Speed Boost", "Increases running speed."));
@@ -373,17 +377,17 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("OrangeWhitePink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("OrangeWhitePurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("OrangeWhiteRed", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("OrangeWhiteWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeWhiteWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeWhiteYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("OrangeYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeYellowCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("OrangeYellowOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("OrangeYellowPink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("OrangeYellowPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("OrangeYellowRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("OrangeYellowRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("OrangeYellowWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("OrangeYellowYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("PinkBlueBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkBlueBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkBlueCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PinkBlueGreen", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PinkBlueOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -392,8 +396,8 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PinkBlueRed", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkBlueWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkBlueYellow", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("PinkCyanBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("PinkCyanCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkCyanBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("PinkCyanCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkCyanGreen", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PinkCyanOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PinkCyanPink", new PotionEffect("Swim Speed", "Makes you swim faster."));
@@ -407,11 +411,11 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PinkGreenOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PinkGreenPink", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkGreenPurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PinkGreenRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("PinkGreenWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkGreenRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("PinkGreenWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkGreenYellow", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PinkOrangeBlue", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PinkOrangeCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkOrangeCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkOrangeGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkOrangeOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkOrangePink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -424,7 +428,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PinkPinkGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PinkPinkOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkPinkPurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PinkPinkRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkPinkRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkPinkWhite", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PinkPinkYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkPurpleBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
@@ -432,9 +436,9 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PinkPurpleGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkPurpleOrange", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PinkPurplePink", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("PinkPurplePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkPurplePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkPurpleRed", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("PinkPurpleWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkPurpleWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkPurpleYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PinkRedBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PinkRedCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -442,25 +446,25 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PinkRedOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PinkRedPink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PinkRedPurple", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("PinkRedRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("PinkRedWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("PinkRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkRedRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("PinkRedWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("PinkRedYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkWhiteBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkWhiteCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PinkWhiteGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkWhiteGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkWhiteOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PinkWhitePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("PinkWhitePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkWhitePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkWhiteRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PinkWhiteWhite", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkWhiteYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("PinkYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkYellowCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkYellowGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkYellowOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PinkYellowPink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PinkYellowPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("PinkYellowRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PinkYellowRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PinkYellowWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PinkYellowYellow", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PurpleBlueBlue", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -469,40 +473,40 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PurpleBlueOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PurpleBluePink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PurpleBluePurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("PurpleBlueRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleBlueRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleBlueWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PurpleBlueYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleBlueYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleCyanBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PurpleCyanCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("PurpleCyanGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleCyanGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleCyanOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleCyanPink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PurpleCyanPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleCyanRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PurpleCyanWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleCyanWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleCyanYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PurpleGreenBlue", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PurpleGreenCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleGreenCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleGreenGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleGreenOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleGreenPink", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("PurpleGreenPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleGreenPurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleGreenRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PurpleGreenWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleGreenYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurpleOrangeBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PurpleOrangeCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurpleOrangeGreen", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("PurpleOrangeOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleOrangeOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleOrangePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleOrangePurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("PurpleOrangeRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleOrangeRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleOrangeWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("PurpleOrangeYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleOrangeYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurplePinkBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PurplePinkCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PurplePinkGreen", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("PurplePinkOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurplePinkOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurplePinkPink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurplePinkPurple", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PurplePinkRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -512,8 +516,8 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PurplePurpleCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurplePurpleGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurplePurpleOrange", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("PurplePurplePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("PurplePurplePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurplePurplePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("PurplePurplePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurplePurpleRed", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("PurplePurpleWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurplePurpleYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -528,7 +532,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PurpleRedYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PurpleWhiteBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("PurpleWhiteCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("PurpleWhiteGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleWhiteGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleWhiteOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleWhitePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("PurpleWhitePurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -536,7 +540,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PurpleWhiteWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PurpleWhiteYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurpleYellowBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("PurpleYellowCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("PurpleYellowCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("PurpleYellowGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("PurpleYellowOrange", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("PurpleYellowPink", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -546,10 +550,10 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("PurpleYellowYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedBlueBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("RedBlueCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("RedBlueGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedBlueGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedBlueOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedBluePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("RedBluePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedBluePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedBlueRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedBlueWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("RedBlueYellow", new PotionEffect("Speed Boost", "Increases running speed."));
@@ -566,7 +570,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("RedGreenCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("RedGreenGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedGreenOrange", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("RedGreenPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedGreenPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedGreenPurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("RedGreenRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("RedGreenWhite", new PotionEffect("Speed Boost", "Increases running speed."));
@@ -575,27 +579,27 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("RedOrangeCyan", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedOrangeGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedOrangeOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("RedOrangePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedOrangePink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedOrangePurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("RedOrangeRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedOrangeWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("RedOrangeYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("RedPinkBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("RedPinkCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedPinkCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedPinkGreen", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedPinkOrange", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("RedPinkPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedPinkPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedPinkPurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedPinkRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("RedPinkWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedPinkWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedPinkYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("RedPurpleBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("RedPurpleCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedPurpleCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedPurpleGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("RedPurpleOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedPurplePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("RedPurplePurple", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("RedPurpleRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedPurpleRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedPurpleWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("RedPurpleYellow", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedRedBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -607,11 +611,11 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("RedRedWhite", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedRedYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("RedWhiteBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("RedWhiteCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedWhiteCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedWhiteGreen", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedWhiteOrange", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("RedWhitePink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("RedWhitePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedWhitePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedWhiteRed", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("RedWhiteWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("RedWhiteYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -619,10 +623,10 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("RedYellowCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("RedYellowGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("RedYellowOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("RedYellowPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedYellowPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedYellowPurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("RedYellowRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("RedYellowWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("RedYellowRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("RedYellowWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("RedYellowYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("WhiteBlueBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("WhiteBlueCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -641,14 +645,14 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("WhiteCyanPurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("WhiteCyanRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("WhiteCyanWhite", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("WhiteCyanYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhiteCyanYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhiteGreenBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("WhiteGreenCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("WhiteGreenGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("WhiteGreenOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("WhiteGreenPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhiteGreenOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("WhiteGreenPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhiteGreenPurple", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("WhiteGreenRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhiteGreenRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhiteGreenWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("WhiteGreenYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("WhiteOrangeBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -661,8 +665,8 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("WhiteOrangeWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhiteOrangeYellow", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhitePinkBlue", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("WhitePinkCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("WhitePinkGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhitePinkCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("WhitePinkGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhitePinkOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhitePinkPink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhitePinkPurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -672,7 +676,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("WhitePurpleBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhitePurpleCyan", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("WhitePurpleGreen", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("WhitePurpleOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhitePurpleOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhitePurplePink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("WhitePurplePurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("WhitePurpleRed", new PotionEffect("Jump Height", "Increases how high you can jump."));
@@ -685,18 +689,18 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("WhiteRedPink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("WhiteRedPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhiteRedRed", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("WhiteRedWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhiteRedWhite", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhiteRedYellow", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("WhiteWhiteBlue", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhiteWhiteCyan", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("WhiteWhiteGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("WhiteWhiteOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhiteWhiteGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("WhiteWhiteOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhiteWhitePink", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("WhiteWhitePurple", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("WhiteWhiteRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("WhiteWhiteWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhiteWhiteYellow", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("WhiteYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("WhiteYellowBlue", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("WhiteYellowCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhiteYellowGreen", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("WhiteYellowOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
@@ -718,7 +722,7 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("YellowCyanCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowCyanGreen", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("YellowCyanOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
-        potionEffects.Add("YellowCyanPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowCyanPink", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowCyanPurple", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowCyanRed", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowCyanWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
@@ -730,30 +734,30 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("YellowGreenPurple", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("YellowGreenRed", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowGreenWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("YellowGreenYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowGreenYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowOrangeBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("YellowOrangeCyan", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowOrangeOrange", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("YellowOrangePink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("YellowOrangePurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("YellowOrangeRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowOrangeRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowOrangeWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("YellowOrangeYellow", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("YellowPinkBlue", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("YellowPinkCyan", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("YellowPinkGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("YellowPinkOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowPinkOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowPinkPink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("YellowPinkPurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("YellowPinkRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("YellowPinkWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
-        potionEffects.Add("YellowPinkYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowPinkYellow", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowPurpleBlue", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("YellowPurpleCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
-        potionEffects.Add("YellowPurpleGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowPurpleCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
+        potionEffects.Add("YellowPurpleGreen", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowPurpleOrange", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowPurplePink", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("YellowPurplePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowPurplePurple", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowPurpleRed", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("YellowPurpleWhite", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("YellowPurpleYellow", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -767,18 +771,18 @@ public class PotionSystem : MonoBehaviour
         potionEffects.Add("YellowRedWhite", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowRedYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("YellowWhiteBlue", new PotionEffect("Speed Boost", "Increases running speed."));
-        potionEffects.Add("YellowWhiteCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowWhiteCyan", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowWhiteGreen", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
-        potionEffects.Add("YellowWhiteOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowWhiteOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowWhitePink", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("YellowWhitePurple", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("YellowWhiteRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowWhiteRed", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowWhiteWhite", new PotionEffect("Jump Height", "Increases how high you can jump."));
         potionEffects.Add("YellowWhiteYellow", new PotionEffect("Swim Speed", "Makes you swim faster."));
         potionEffects.Add("YellowYellowBlue", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("YellowYellowCyan", new PotionEffect("Speed Boost", "Increases running speed."));
         potionEffects.Add("YellowYellowGreen", new PotionEffect("Jump Height", "Increases how high you can jump."));
-        potionEffects.Add("YellowYellowOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks and enhances crouch speed"));
+        potionEffects.Add("YellowYellowOrange", new PotionEffect("Master Assassin", "Enhances speed for stealth attacks, crouch speed and shows enemies detection radar"));
         potionEffects.Add("YellowYellowPink", new PotionEffect("Wraith Form", "Turn into a wraith, ignoring enemies and interactions"));
         potionEffects.Add("YellowYellowPurple", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
         potionEffects.Add("YellowYellowRed", new PotionEffect("Tiny Tina's Curse", "Shrinks you down permanently"));
@@ -817,69 +821,109 @@ public class PotionSystem : MonoBehaviour
     }
 
     public void PlaceIngredient(GameObject ingredient)
+{
+    if (placedBottle == null)
     {
-        if (placedBottle == null)
-        {
-            Debug.Log("Cannot place ingredient: Bottle has not been placed yet.");
-            return;
-        }
-
-        if (placedIngredients.Count >= 3)
-        {
-            Debug.Log("Already placed 3 ingredients.");
-            return;
-        }
-
-        for (int i = 0; i < ingredientSpots.Length; i++)
-        {
-            if (placedIngredients.Count <= i && ingredientSpots[i] != null && !placedIngredients.Contains(ingredient))
-            {
-                ingredient.transform.position = ingredientSpots[i].position;
-                ingredient.transform.SetParent(ingredientSpots[i]);
-                placedIngredients.Add(ingredient);
-
-                Debug.Log($"Ingredient placed on spot {i + 1}: {ingredient.name}");
-
-                if (placedIngredients.Count == 3)
-                {
-                    Debug.Log("All ingredients placed. Processing potion...");
-                    ProcessPotionCreation();
-                }
-
-                return;
-            }
-        }
+        Debug.Log("Cannot place ingredient: Bottle has not been placed yet.");
+        return;
     }
 
-// Add a default effect to handle unknown potions
-private void ProcessPotionCreation()
-{
-    string potionKey = GeneratePotionKey(); // Generate a unique key based on the ingredients
-    lastPotionKey = potionKey;
-    Debug.Log($"Potion key generated: {potionKey}");
-
-    if (potionEffects.ContainsKey(potionKey))
+    if (placedIngredients.Count >= 3)
     {
-        PotionEffect effect = potionEffects[potionKey];
-        Debug.Log($"Potion effect: {effect.effectName} - {effect.description}");
+        Debug.Log("Already placed 3 ingredients.");
+        return;
+    }
 
-        // Rename the potion only after the effect has been determined
+    for (int i = 0; i < ingredientSpots.Length; i++)
+    {
+        if (placedIngredients.Count <= i && ingredientSpots[i] != null && !placedIngredients.Contains(ingredient))
+        {
+            Vector3 offsetPosition = ingredientSpots[i].position + new Vector3(0, 0.05f, 0);
+            ingredient.transform.position = offsetPosition;
+            ingredient.transform.SetParent(ingredientSpots[i]);
+            placedIngredients.Add(ingredient);
+
+            // 🔒 Mark as placed
+            Ingredient ingredientScript = ingredient.GetComponent<Ingredient>();
+            if (ingredientScript != null)
+                ingredientScript.isPlaced = true;
+
+            Debug.Log($"Ingredient placed on spot {i + 1}: {ingredient.name}");
+
+            if (placedIngredients.Count == 3)
+            {
+                Debug.Log("All ingredients placed. Processing potion...");
+                ProcessPotionCreation();
+            }
+
+            return;
+        }
+    }
+}
+
+
+
+    // Add a default effect to handle unknown potions
+    private void ProcessPotionCreation()
+    {
+        string potionKey = GeneratePotionKey();
+        lastPotionKey = potionKey;
+
+        Color finalColor = GeneratePotionColor(); // Assume this is the blended color
+
         if (placedBottle != null)
         {
             Potion potion = placedBottle.GetComponent<Potion>();
             if (potion != null)
             {
-                potion.potionEffectName = effect.effectName;
-                potion.potionEffectDescription = effect.description; // Ensure this is updated!
+                if (potionEffects.ContainsKey(potionKey))
+                {
+                    PotionEffect effect = potionEffects[potionKey];
+                    potion.potionEffectName = effect.effectName;
+                    potion.potionEffectDescription = effect.description;
+                }
+                else
+                {
+                    potion.potionEffectName = "Unknown Potion";
+                    potion.potionEffectDescription = "This mixture had unexpected results.";
+                }
+
+                potion.finalPotionColor = finalColor; // <- store the final color
+                potion.UpdatePotionColor(finalColor); // <- update visual mesh too
             }
         }
-    }
-    else
-    {
-        // No specific effect found, create potion with no effect
-        Debug.Log("Potion effect: None - Creating default potion.");
-        // Optionally apply some default behavior for no effect (like a neutral color or visual)
-        Color defaultColor = Color.gray;
+        else
+        {
+            // No specific effect found, create potion with no effect
+            Debug.Log("Potion effect: None - Creating default potion.");
+            // Optionally apply some default behavior for no effect (like a neutral color or visual)
+            Color defaultColor = Color.gray;
+            if (placedBottle != null)
+            {
+                Transform bottleVisual = placedBottle.transform.GetChild(0); // Assuming the visual is the first child
+                if (bottleVisual != null)
+                {
+                    Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
+                    if (bottleRenderer != null)
+                    {
+                        // Apply default color to the bottle
+                        bottleRenderer.material.SetColor("_BottomColor", defaultColor);
+                        Color topColor = defaultColor * 0.5f;
+                        topColor.a = 1f;
+                        bottleRenderer.material.SetColor("_TopColor", topColor);
+                        Color foamColor = Color.Lerp(defaultColor, Color.white, 0.5f);
+                        foamColor.a = 1f;
+                        bottleRenderer.material.SetColor("_FoamColor", foamColor);
+                        Debug.Log("Applied default potion colors.");
+                    }
+                }
+            }
+        }
+
+        // Continue with potion creation (color blending and filling)
+        Color potionColor = GeneratePotionColor();
+        Debug.Log($"Potion color generated: {potionColor}");
+
         if (placedBottle != null)
         {
             Transform bottleVisual = placedBottle.transform.GetChild(0); // Assuming the visual is the first child
@@ -888,104 +932,80 @@ private void ProcessPotionCreation()
                 Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
                 if (bottleRenderer != null)
                 {
-                    // Apply default color to the bottle
-                    bottleRenderer.material.SetColor("_BottomColor", defaultColor);
-                    Color topColor = defaultColor * 0.5f;
+                    // Apply color to the bottle
+                    bottleRenderer.material.SetColor("_BottomColor", potionColor);
+                    Color topColor = potionColor * 0.5f;
                     topColor.a = 1f;
                     bottleRenderer.material.SetColor("_TopColor", topColor);
-                    Color foamColor = Color.Lerp(defaultColor, Color.white, 0.5f);
+                    Color foamColor = Color.Lerp(potionColor, Color.white, 0.5f);
                     foamColor.a = 1f;
                     bottleRenderer.material.SetColor("_FoamColor", foamColor);
-                    Debug.Log("Applied default potion colors.");
+                    Debug.Log("Applied colors.");
                 }
             }
         }
-    }
 
-    // Continue with potion creation (color blending and filling)
-    Color potionColor = GeneratePotionColor();
-    Debug.Log($"Potion color generated: {potionColor}");
+        // Gradually reduce the fill amount from 1 to 0.5
+        if (fillCoroutine != null)
+            StopCoroutine(fillCoroutine);
+        fillCoroutine = StartCoroutine(GradualFillDecrease());
 
-    if (placedBottle != null)
-    {
-        Transform bottleVisual = placedBottle.transform.GetChild(0); // Assuming the visual is the first child
-        if (bottleVisual != null)
+        // Remove ingredients and prepare the potion for drinking
+        foreach (GameObject ingredient in placedIngredients)
         {
-            Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
-            if (bottleRenderer != null)
+            Destroy(ingredient);
+        }
+
+        placedIngredients.Clear();
+        isPotionBlended = true;
+
+        if (placedBottle != null)
+        {
+            Potion potion = placedBottle.GetComponent<Potion>();
+            if (potion != null)
             {
-                // Apply color to the bottle
-                bottleRenderer.material.SetColor("_BottomColor", potionColor);
-                Color topColor = potionColor * 0.5f;
-                topColor.a = 1f;
-                bottleRenderer.material.SetColor("_TopColor", topColor);
-                Color foamColor = Color.Lerp(potionColor, Color.white, 0.5f);
-                foamColor.a = 1f;
-                bottleRenderer.material.SetColor("_FoamColor", foamColor);
-                Debug.Log("Applied colors.");
+
+                potion.ShowEffectName(); // <<< Show the effect name (even if it's empty or default)
             }
         }
     }
 
-    // Gradually reduce the fill amount from 1 to 0.5
-    if (fillCoroutine != null)
-        StopCoroutine(fillCoroutine);
-    fillCoroutine = StartCoroutine(GradualFillDecrease());
 
-    // Remove ingredients and prepare the potion for drinking
-    foreach (GameObject ingredient in placedIngredients)
+    private void ApplyPotionEffect(PotionEffect effect)
     {
-        Destroy(ingredient);
-    }
-
-    placedIngredients.Clear();
-    isPotionBlended = true;
-
-    if (placedBottle != null)
-    {
-        Potion potion = placedBottle.GetComponent<Potion>();
-        if (potion != null)
+        if (effect.effectName.Contains("Speed"))
         {
-            potion.ShowEffectName(); // <<< Show the effect name (even if it's empty or default)
+            playerBuffs.ApplyBuff("Speed Boost");
+        }
+        else if (effect.effectName.Contains("Jump Height"))
+        {
+            playerBuffs.ApplyBuff("Jump Height");
+        }
+        else if (effect.effectName.Contains("Swim Speed"))
+        {
+            playerBuffs.ApplyBuff("Swim Speed");
+
+        }
+        else if (effect.effectName.Contains("Wraith Form"))
+        {
+            playerBuffs.ApplyBuff("Wraith Form"); // <<< Add this line
+        }
+
+        else if (effect.effectName.Contains("Tiny Tina"))
+        {
+            playerBuffs.ApplyPermanentShrink(); // Shrinks to 30% scale for 10 seconds
+        }
+
+        else if (effect.effectName.Contains("Master Assassin"))
+        {
+            playerBuffs.ApplyMasterAssassinBuff();
+        }
+
+        else
+        {
+            Debug.Log("Potion has no specific effect to apply.");
         }
     }
-}
-
-
-private void ApplyPotionEffect(PotionEffect effect)
-{
-    if (effect.effectName.Contains("Speed"))
-    {
-        playerBuffs.ApplyBuff("Speed Boost");
-    }
-    else if (effect.effectName.Contains("Jump Height"))
-    {
-        playerBuffs.ApplyBuff("Jump Height");
-    }
-    else if (effect.effectName.Contains("Swim Speed"))
-    {
-        playerBuffs.ApplySwimSpeedBoost(1.5f, 5f); 
-    }
-    else if (effect.effectName.Contains("Wraith Form"))
-    {
-        playerBuffs.ApplyBuff("Wraith Form"); // <<< Add this line
-    }
-
-    else if (effect.effectName.Contains("Tiny Tina"))
-    {
-        playerBuffs.ApplyPermanentShrink(); // Shrinks to 30% scale for 10 seconds
-    }
-
-    else if (effect.effectName.Contains("Master Assassin"))
-    {
-        playerBuffs.ApplyMasterAssassinBuff(); 
-    }
-
-    else
-    {
-        Debug.Log("Potion has no specific effect to apply.");
-    }
-}
 
 
 
@@ -993,40 +1013,40 @@ private void ApplyPotionEffect(PotionEffect effect)
 
     // New method to apply the speed boost
     private void ApplySpeedBoost()
-{
-    if (itemPickup != null && itemPickup.playerMovement != null)
     {
-        float speedBoostMultiplier = 1.5f;
-        itemPickup.playerMovement.SetSpeedMultiplier(speedBoostMultiplier);
-        Debug.Log($"Speed multiplier applied: {speedBoostMultiplier}");
+        if (itemPickup != null && itemPickup.playerMovement != null)
+        {
+            float speedBoostMultiplier = 1.5f;
+            itemPickup.playerMovement.SetSpeedMultiplier(speedBoostMultiplier);
+            Debug.Log($"Speed multiplier applied: {speedBoostMultiplier}");
+        }
     }
-}
 
 
 
     string GeneratePotionKey()
-{
-    List<string> ingredientTypes = new List<string>();
-
-    foreach (GameObject ingredient in placedIngredients)
     {
-        Ingredient ingredientComponent = ingredient.GetComponent<Ingredient>();
-        if (ingredientComponent != null)
+        List<string> ingredientTypes = new List<string>();
+
+        foreach (GameObject ingredient in placedIngredients)
         {
-            ingredientTypes.Add(ingredientComponent.ingredientType); // Use ingredientType here
+            Ingredient ingredientComponent = ingredient.GetComponent<Ingredient>();
+            if (ingredientComponent != null)
+            {
+                ingredientTypes.Add(ingredientComponent.ingredientType); // Use ingredientType here
+            }
         }
+
+        // Sort the ingredient types to ensure consistency for the key (this makes the order irrelevant)
+        ingredientTypes.Sort();
+
+        // Join the sorted types to form a unique key
+        return string.Join("", ingredientTypes);
     }
 
-    // Sort the ingredient types to ensure consistency for the key (this makes the order irrelevant)
-    ingredientTypes.Sort();
-
-    // Join the sorted types to form a unique key
-    return string.Join("", ingredientTypes);
-}
 
 
-
-    Color GeneratePotionColor()
+    public Color GeneratePotionColor()
     {
         Color blendedColor = Color.black;
         if (placedIngredients.Count == 3)
@@ -1078,77 +1098,77 @@ private void ApplyPotionEffect(PotionEffect effect)
     }
 
     private IEnumerator GradualFillDecrease()
-{
-    while (fillAmount > 0.5f)
     {
-        fillAmount -= 0.05f;
-        fillAmount = Mathf.Max(fillAmount, 0.5f);
-
-        Liquid liquid = placedBottle.GetComponentInChildren<Liquid>();
-        if (liquid != null)
+        while (fillAmount > 0.5f)
         {
-            liquid.SetFillAmount(fillAmount);
+            fillAmount -= 0.05f;
+            fillAmount = Mathf.Max(fillAmount, 0.5f);
+
+            Liquid liquid = placedBottle.GetComponentInChildren<Liquid>();
+            if (liquid != null)
+            {
+                liquid.SetFillAmount(fillAmount);
+            }
+            yield return new WaitForSeconds(0.1f);
         }
-        yield return new WaitForSeconds(0.1f);
+
+        Debug.Log("Potion fill is at 0.5 and won't decrease further.");
+        // Don't apply the speed boost here anymore.
     }
 
-    Debug.Log("Potion fill is at 0.5 and won't decrease further.");
-    // Don't apply the speed boost here anymore.
-}
 
 
+    private bool effectApplied = false;
+    private bool HasEffectApplied()
+    {
+        return effectApplied;
+    }
 
-private bool effectApplied = false;
-private bool HasEffectApplied()
-{
-    return effectApplied;
-}
-
-private void SetEffectApplied()
-{
-    effectApplied = true;
-}
+    private void SetEffectApplied()
+    {
+        effectApplied = true;
+    }
 
 
     public void DrinkPotion(GameObject bottle)
-{
-    if (!isPotionBlended || bottle != placedBottle)
     {
-        Debug.Log("Cannot drink: No valid blended potion.");
-        return;
+        if (!isPotionBlended || bottle != placedBottle)
+        {
+            Debug.Log("Cannot drink: No valid blended potion.");
+            return;
+        }
+
+        // Apply the effect now, when the potion is drunk
+        string key = lastPotionKey;
+        if (potionEffects.ContainsKey(key))
+        {
+            PotionEffect effect = potionEffects[key];
+            Debug.Log($"Drank potion: {effect.effectName}");
+
+            ApplyPotionEffect(effect); // ← Apply the effect here
+
+            // Optionally destroy bottle or play a drink animation
+            Destroy(bottle);
+        }
     }
 
-    // Apply the effect now, when the potion is drunk
-    string key = lastPotionKey;
-    if (potionEffects.ContainsKey(key))
+
+    public void ApplyJumpHeightBoost()
     {
-        PotionEffect effect = potionEffects[key];
-        Debug.Log($"Drank potion: {effect.effectName}");
-
-        ApplyPotionEffect(effect); // ← Apply the effect here
-
-        // Optionally destroy bottle or play a drink animation
-        Destroy(bottle);
+        playerBuffs.ApplyBuff("Jump Height");
     }
-}
 
 
-public void ApplyJumpHeightBoost()
-{
-    playerBuffs.ApplyBuff("Jump Height");
-}
-
-
-private IEnumerator ResetJumpHeightAfterBoost()
-{
-    yield return new WaitForSeconds(jumpHeightBoostDuration);
-
-    if (playerMovement != null)
+    private IEnumerator ResetJumpHeightAfterBoost()
     {
-        playerMovement.jumpHeight = originalJumpHeight;
-        Debug.Log("Jump Height Boost ended.");
+        yield return new WaitForSeconds(jumpHeightBoostDuration);
+
+        if (playerMovement != null)
+        {
+            playerMovement.jumpHeight = originalJumpHeight;
+            Debug.Log("Jump Height Boost ended.");
+        }
     }
-}
 }
 
 

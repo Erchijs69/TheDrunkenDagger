@@ -16,7 +16,13 @@ public class Waypoint : MonoBehaviour
     public DialogueLine[] dialogueLines;
     public bool useStopForSeconds = false;
     public float stopDuration = 3f;
+
+    [Header("Quest Integration")]
+    public bool triggersQuestOnEnd = false;
+    public bool requiresQuestCompletion = false;
+    public QuestSO requiredQuest;
 }
+
 
 
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class ItemPickup : MonoBehaviour
 {
     public Transform holdPosition;
@@ -22,7 +23,7 @@ public class ItemPickup : MonoBehaviour
 
     private Vector3 originalItemPosition;
 
-    private Animator holdAnimator;
+    [SerializeField] private Animator holdAnimator;
     private bool isDrinking = false;
 
     public PlayerMovement playerMovement;
@@ -32,15 +33,26 @@ public class ItemPickup : MonoBehaviour
     public PlayerBuffs playerBuffs; // Drag Player in Inspector or find in Start()
 
     void Start()
+{
+    ghostMaterial = new Material(Shader.Find("Standard"));
+    ghostMaterial.color = new Color(1f, 1f, 1f, 0.3f);
+
+    if (holdPosition != null)
     {
-        ghostMaterial = new Material(Shader.Find("Standard"));
-        ghostMaterial.color = new Color(1f, 1f, 1f, 0.3f);
-
         holdAnimator = holdPosition.GetComponent<Animator>();
-
-        if (potionSystem == null)
-        potionSystem = FindObjectOfType<PotionSystem>(); // Automatically find the PotionSystem
+        if (holdAnimator == null)
+        {
+            Debug.LogWarning("Animator not found on holdPosition! Forcing creation.");
+            holdAnimator = holdPosition.gameObject.AddComponent<Animator>();
+            // You could also force-assign a fallback AnimatorController if needed:
+            // holdAnimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("FallbackAnimator");
+        }
     }
+
+    if (potionSystem == null)
+        potionSystem = FindObjectOfType<PotionSystem>();
+}
+
 
     private void Update()
     {
@@ -71,42 +83,58 @@ public class ItemPickup : MonoBehaviour
 
         if (heldItem != null)
             UpdateGhostItemPosition();
-    }
 
-    void TryPickupItem()
-    {
-        if (heldItem != null) return; // Don't pick up if already holding
-
-        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
+        if (Input.GetKeyDown(KeyCode.G))
 {
-    GameObject item = hit.collider.gameObject;
-
-    // Remove this line:
-    // GameObject item = hit.collider.gameObject;
-
-    if (!hit.collider.isTrigger) 
+    Debug.Log("Test: Triggering drinking animation manually.");
+    if (holdAnimator != null)
     {
-        // Use the already declared 'item'
-        heldItem = item;
-        heldItemRb = heldItem.GetComponent<Rigidbody>();
-        itemCollider = heldItem.GetComponent<Collider>();
-
-        heldItem.SetActive(true);
-        heldItemRb.isKinematic = true;
-        heldItem.transform.SetParent(holdPosition);
-        heldItem.transform.localPosition = Vector3.zero;
-        heldItem.transform.localRotation = Quaternion.identity;
-
-        originalItemPosition = heldItem.transform.position;
-
-        CreateGhostItem();
+        holdAnimator.SetBool("IsDrinking", true);
+        StartCoroutine(ResetDrinkAnimation()); // Coroutine to reset it back after a short delay
     }
 }
 
     }
+
+    void TryPickupItem()
+{
+    if (heldItem != null) return;
+
+    Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+    RaycastHit hit;
+
+    if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
+    {
+        GameObject item = hit.collider.gameObject;
+
+        // 🔍 Check if it's an ingredient and already placed
+        Ingredient ingredient = item.GetComponent<Ingredient>();
+        if (ingredient != null && ingredient.isPlaced)
+        {
+            Debug.Log("Cannot pick up: Ingredient has already been placed.");
+            return;
+        }
+
+        if (!hit.collider.isTrigger)
+        {
+            heldItem = item;
+            heldItemRb = heldItem.GetComponent<Rigidbody>();
+            itemCollider = heldItem.GetComponent<Collider>();
+            if (itemCollider != null)
+                itemCollider.enabled = false;
+
+            heldItem.SetActive(true);
+            heldItemRb.isKinematic = true;
+            heldItem.transform.SetParent(holdPosition);
+            heldItem.transform.localPosition = Vector3.zero;
+            heldItem.transform.localRotation = Quaternion.identity;
+
+            originalItemPosition = heldItem.transform.position;
+            CreateGhostItem();
+        }
+    }
+}
+
 
     void CreateGhostItem()
     {
@@ -180,11 +208,12 @@ public class ItemPickup : MonoBehaviour
 
         heldItemRb.isKinematic = false;
 
+        if (itemCollider != null)
+        itemCollider.enabled = true;
+
         Destroy(ghostItem);
-
-        Debug.Log("Item placed at: " + heldItem.transform.position);
-
         heldItem = null;
+
     }
 
     public void SpawnItemToHand(GameObject item)
@@ -198,6 +227,9 @@ public class ItemPickup : MonoBehaviour
         heldItem = item;
         heldItemRb = heldItem.GetComponent<Rigidbody>();
         itemCollider = heldItem.GetComponent<Collider>();
+        if (itemCollider != null)
+        itemCollider.enabled = false;
+
 
         heldItem.SetActive(true);
         heldItemRb.isKinematic = true;
@@ -218,53 +250,37 @@ public class ItemPickup : MonoBehaviour
 {
     if (heldItem != null)
     {
-        // Check if the held item is a potion and if it's not already consumed
         Potion potion = heldItem.GetComponent<Potion>();
         if (potion != null && !potion.HasBeenConsumed)
         {
             Liquid liquid = heldItem.GetComponentInChildren<Liquid>();
             if (liquid != null && liquid.gameObject.activeSelf && liquid.fillAmount >= 0.5f)
             {
-                isDrinking = true; // Mark that we are drinking the potion
+                isDrinking = true;
 
                 Debug.Log("Drinking the potion...");
 
-                // Show the effect name UI before drinking
                 potion.ShowEffectName();
 
-                // Start the drinking animation (if available)
                 if (holdAnimator != null)
-                {
-                    holdAnimator.SetTrigger("Drink");
-                }
+                    holdAnimator.SetBool("IsDrinking", true);
 
-                // Gradually increase the potion's fill amount while drinking
                 while (liquid.fillAmount < 1f)
                 {
-                    liquid.SetFillAmount(liquid.fillAmount + 0.03f); // Gradually fill the potion
-                    yield return new WaitForSeconds(0.1f); // Slow the drinking process
+                    liquid.SetFillAmount(liquid.fillAmount + 0.03f);
+                    yield return new WaitForSeconds(0.1f);
                 }
 
-                // Ensure the fill amount doesn't exceed 1
                 liquid.SetFillAmount(1f);
 
-                // Wait for the animation to finish (3 seconds or adjust as necessary)
                 yield return new WaitForSeconds(3f);
 
-                // Apply the potion effect after drinking
                 ApplyPotionEffect(potion);
-
-                // Hide the effect name UI after drinking
                 potion.HideEffectName();
-
-                // Mark the potion as consumed
                 potion.Consume();
 
-                // Destroy the held item after drinking
                 Destroy(heldItem);
                 heldItem = null;
-
-                isDrinking = false; // Set the drinking flag back to false
             }
             else
             {
@@ -276,7 +292,13 @@ public class ItemPickup : MonoBehaviour
             Debug.Log("Potion is either missing or has already been consumed.");
         }
     }
+
+    // SAFETY: Always reset these
+    isDrinking = false;
+    if (holdAnimator != null)
+        holdAnimator.SetBool("IsDrinking", false);
 }
+
 
 
 private void ApplyPotionEffect(Potion potion)
@@ -303,6 +325,38 @@ private void ApplyPotionEffect(Potion potion)
             }
         }
     }
+
+    public void ForceDropHeldItem()
+{
+    if (heldItem == null) return;
+
+    heldItem.transform.SetParent(null);
+    heldItemRb.isKinematic = false;
+
+    if (itemCollider != null)
+    itemCollider.enabled = true;
+    
+    heldItem = null;
+
+    if (ghostItem != null)
+    {
+        Destroy(ghostItem);
+        ghostItem = null;
+    }
+
+    Debug.Log("Item force-dropped.");
+}
+
+private IEnumerator ResetDrinkAnimation()
+{
+    yield return new WaitForSeconds(2f); // Adjust duration as needed to match animation length
+    if (holdAnimator != null)
+    {
+        holdAnimator.SetBool("IsDrinking", false);
+        Debug.Log("Test: Reset drinking animation.");
+    }
+}
+
 
 }
 

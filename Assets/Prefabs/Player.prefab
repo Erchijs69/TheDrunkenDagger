@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2350939760857117907}
+  - component: {fileID: 4699707152074124975}
   m_Layer: 0
   m_Name: HoldPosition
   m_TagString: Untagged
@@ -25,12 +26,33 @@ Transform:
   m_GameObject: {fileID: 499381617564559207}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.484, y: 0, z: 1.133}
+  m_LocalPosition: {x: 0.641, y: -0.3, z: 1.002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7065836879198609430}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &4699707152074124975
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 499381617564559207}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 603bd467b9dec0944a22a9dd0bb8b3c0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2325727391682007151
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,7 +101,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2325727391682007151}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -286,7 +308,7 @@ GameObject:
   - component: {fileID: 8667840721358812567}
   - component: {fileID: 9080981540317420847}
   - component: {fileID: 7614585724423240693}
-  - component: {fileID: 7929658502353581913}
+  - component: {fileID: 5952289677913433020}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -305,7 +327,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0.2596197, z: 0, w: 0.96571094}
   m_LocalPosition: {x: 0, y: 4.16, z: -1.913}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6834186240245743741}
   - {fileID: 7065836879198609430}
@@ -358,9 +380,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.8
-  m_Height: 3.81
+  m_Height: 4.096695
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -0.031541348, z: 0}
 --- !u!114 &4210668924803594121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,7 +396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 4054177162072971319}
-  speed: 8
+  speed: 9
   crouchSpeed: 3
   gravity: -19.62
   jumpHeight: 3
@@ -382,10 +404,20 @@ MonoBehaviour:
   groundDistance: 0.4
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 80
   canMove: 1
   floatHeight: 0.8
+  shrunkFloatHeight: 2
   slopeLimit: 75
+  itemPickup: {fileID: 8667840721358812567}
+  swimControlSpeed: 5
+  isShrinking: 0
+  shrinkDuration: 5
+  shrinkScale: {x: 0.2, y: 0.2, z: 0.2}
+  reducedSpeed: 3
+  reducedJumpHeight: 1.5
+  fastStealthMode: 0
+  fastCrouchSpeed: 8
 --- !u!114 &8667840721358812567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,6 +442,10 @@ MonoBehaviour:
   maxAngle: 30
   placementHeightOffset: -0.1
   maxPlaceDistance: 6
+  holdAnimator: {fileID: 0}
+  playerMovement: {fileID: 4210668924803594121}
+  potionSystem: {fileID: 0}
+  playerBuffs: {fileID: 5952289677913433020}
 --- !u!114 &9080981540317420847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,6 +467,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   stealthPromptUI: {fileID: 0}
+  cartLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  stealthTakedownDistance: 2
 --- !u!114 &7614585724423240693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,7 +486,10 @@ MonoBehaviour:
   daggerObject: {fileID: 412560863533243861}
   playerMovement: {fileID: 4210668924803594121}
   mouseLook: {fileID: 5297191146241827661}
---- !u!114 &7929658502353581913
+  fastStealthMode: 0
+  fastKillAnimSpeed: 2
+  stealthTextUI: {fileID: 0}
+--- !u!114 &5952289677913433020
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -455,26 +498,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 4335130397549149572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90f55a004a590074b84706d342744107, type: 3}
+  m_Script: {fileID: 11500000, guid: 49873eb396eb85344baed2e4f39cfc6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryUI: {fileID: 0}
-  inventorySlots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  player: {fileID: 4335130397549149572}
-  pickUpButton: {fileID: 0}
-  mouseLook: {fileID: 5297191146241827661}
+  speedBoostMultiplier: 2
+  speedBoostDuration: 60
+  jumpBoostMultiplier: 3
+  jumpBoostDuration: 60
+  swimBoostMultiplier: 15
+  swimBoostDuration: 60
+  stealthDuration: 30
+  stealthBuffDuration: 60
+  playerStealthKill: {fileID: 7614585724423240693}
+  isMasterAssassinActive: 0
+  buffUIManager: {fileID: 0}
 --- !u!1 &4711921533239164031
 GameObject:
   m_ObjectHideFlags: 0

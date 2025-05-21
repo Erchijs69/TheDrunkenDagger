@@ -3,13 +3,14 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
 
     public GameObject inventoryUI;
-    public GameObject slotPrefab; // Prefab with a Button + TMP Text
+    public GameObject slotPrefab;
     public Transform slotParent;
 
     private List<GameObject> inventoryItems = new List<GameObject>();
@@ -28,6 +29,10 @@ public class InventoryManager : MonoBehaviour
 
     public PlayerMovement playerMovement;
 
+    PotionSystem potionSystem;
+
+    public TextMeshProUGUI inventoryFullText;
+
     [System.Serializable]
     public class ItemDatabaseEntry
     {
@@ -36,12 +41,13 @@ public class InventoryManager : MonoBehaviour
     }
 
     public List<ItemDatabaseEntry> itemDatabase;
-
-    private List<GameObject> slotObjects = new List<GameObject>();
+    public List<GameObject> slotObjects = new List<GameObject>();
 
     void Start()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
+        potionSystem = FindObjectOfType<PotionSystem>();
+        slotObjects = new List<GameObject>(); 
     }
 
     void Awake()
@@ -55,12 +61,22 @@ public class InventoryManager : MonoBehaviour
     }
 
     void Update()
+{
+    if (!IsDialogueActive() && !itemPickup.IsDrinking() && !playerMovement.IsStealthed)
     {
-        if ((Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.I)) && !itemPickup.IsDrinking() && !playerMovement.IsStealthed)
+        if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.I))
         {
             ToggleInventory();
         }
     }
+}
+
+private bool IsDialogueActive()
+{
+    // Check if dialogue is active in the DialogueManager
+    return FindObjectOfType<DialogueManager>().dialoguePanel.activeSelf;
+}
+
 
     public void ToggleInventory()
     {
@@ -75,7 +91,7 @@ public class InventoryManager : MonoBehaviour
             mouseLook.FreezeLook(inventoryOpen);
 
         if (!inventoryOpen)
-        InventoryTooltip.Instance.HideTooltip(); // 👈 Add this
+            InventoryTooltip.Instance.HideTooltip();
     }
 
     public void AddItem(GameObject item)
@@ -89,10 +105,12 @@ public class InventoryManager : MonoBehaviour
         RefreshInventoryUI();
     }
 
-    private void RefreshInventoryUI()
+    public void RefreshInventoryUI()
     {
         foreach (GameObject slot in slotObjects)
+        {
             Destroy(slot);
+        }
         slotObjects.Clear();
 
         foreach (GameObject item in inventoryItems)
@@ -100,44 +118,117 @@ public class InventoryManager : MonoBehaviour
             GameObject slot = Instantiate(slotPrefab, slotParent);
             slotObjects.Add(slot);
 
-            TextMeshProUGUI text = slot.GetComponentInChildren<TextMeshProUGUI>();
+            Transform iconTransform = slot.transform.Find("Icon");
+            Transform liquidTransform = slot.transform.Find("Liquid");
+            Transform nameTransform = slot.transform.Find("ItemName");
 
+            Image iconImage = iconTransform != null ? iconTransform.GetComponent<Image>() : null;
+            Image liquidImage = liquidTransform != null ? liquidTransform.GetComponent<Image>() : null;
+            TextMeshProUGUI text = nameTransform != null ? nameTransform.GetComponent<TextMeshProUGUI>() : null;
+
+            Item itemData = item.GetComponent<Item>();
             Potion potion = item.GetComponent<Potion>();
-            string description = "";
-            if (potion != null && !string.IsNullOrEmpty(potion.potionEffectName))
+
+            if (iconImage != null)
+{
+    // Always prioritize the itemIcon if it's assigned
+    if (itemData != null && itemData.itemIcon != null)
+    {
+        iconImage.sprite = itemData.itemIcon;
+        iconImage.enabled = true;
+    }
+    else
+    {
+        iconImage.enabled = false; // Hide icon if none is assigned
+    }
+}
+
+if (text != null)
+{
+    if (potion != null && !string.IsNullOrEmpty(potion.potionEffectName))
+    {
+        text.text = potion.potionEffectName;
+    }
+    else if (itemData != null)
+    {
+        text.text = itemData.itemName;
+    }
+}
+
+if (potion != null && liquidImage != null && potion.neutralLiquidSprite != null)
+{
+    liquidImage.sprite = potion.neutralLiquidSprite;
+    liquidImage.enabled = true;
+    liquidImage.color = potion.finalPotionColor;
+}
+else if (liquidImage != null)
+{
+    liquidImage.enabled = false; // Hide if not a potion
+}
+
+
+            if (potion != null)
             {
-                text.text = potion.potionEffectName;
-                description = potion.potionEffectDescription;
-            }
-            else
-            {
-                text.text = item.name;
+                if (text != null && !string.IsNullOrEmpty(potion.potionEffectName))
+                {
+                    text.text = potion.potionEffectName;
+                }
+
+                if (liquidImage != null && potion.neutralLiquidSprite != null)
+                {
+                    liquidImage.sprite = potion.neutralLiquidSprite;
+                    liquidImage.enabled = true;
+                    liquidImage.color = potion.finalPotionColor;
+                }
             }
 
             Button button = slot.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => OnInventorySlotClicked(item));
 
-            // Tooltip Hover Events
             EventTrigger trigger = slot.AddComponent<EventTrigger>();
 
-            EventTrigger.Entry entryEnter = new EventTrigger.Entry();
-            entryEnter.eventID = EventTriggerType.PointerEnter;
+            EventTrigger.Entry entryEnter = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerEnter
+            };
             entryEnter.callback.AddListener((data) =>
             {
+                string description = "";
+                if (potion != null && !string.IsNullOrEmpty(potion.potionEffectDescription))
+                    description = potion.potionEffectDescription;
+
                 if (!string.IsNullOrEmpty(description))
                     InventoryTooltip.Instance.ShowTooltip(description, Input.mousePosition);
             });
 
-            EventTrigger.Entry entryExit = new EventTrigger.Entry();
-            entryExit.eventID = EventTriggerType.PointerExit;
+            EventTrigger.Entry entryExit = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerExit
+            };
             entryExit.callback.AddListener((data) =>
             {
                 InventoryTooltip.Instance.HideTooltip();
             });
 
+            // Right-click to spawn item and drop after 0.2s
+            EventTrigger.Entry rightClickEntry = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerClick
+            };
+            rightClickEntry.callback.AddListener((data) =>
+            {
+                PointerEventData pointerData = (PointerEventData)data;
+                if (pointerData.button == PointerEventData.InputButton.Right)
+                {
+                    RightClickSpawnAndDrop(item);  // Direct call without coroutine
+                }
+            });
+
+
             trigger.triggers.Add(entryEnter);
             trigger.triggers.Add(entryExit);
+            trigger.triggers.Add(rightClickEntry);
         }
     }
 
@@ -154,7 +245,51 @@ public class InventoryManager : MonoBehaviour
         RefreshInventoryUI();
         ToggleInventory();
     }
+
+    private void RightClickSpawnAndDrop(GameObject item)
+{
+    if (itemPickup.IsHoldingItem())
+    {
+        Debug.Log("Cannot spawn item while already holding one.");
+        return;
+    }
+
+    itemPickup.SpawnItemToHand(item);
+    inventoryItems.Remove(item);
+    RefreshInventoryUI();
+
+    // Drop the item immediately after it's spawned
+    itemPickup.ForceDropHeldItem();
+
+    // Ensure the inventory stays open when right-clicking an item
+    // We removed the ToggleInventory() call here, so the inventory remains open
 }
+
+
+
+    public List<GameObject> GetSlotObjects()
+    {
+        return slotObjects;
+    }
+
+    public void ShowInventoryFullMessage()
+    {
+        StopAllCoroutines();
+        StartCoroutine(ShowInventoryFullCoroutine());
+    }
+
+    private IEnumerator ShowInventoryFullCoroutine()
+    {
+        inventoryFullText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        inventoryFullText.gameObject.SetActive(false);
+    }
+}
+
+
+
+
+
 
 
 

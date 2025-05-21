@@ -22,6 +22,7 @@ TagManager:
   - Bottle
   - Enemy
   - Water
+  - Cart
   layers:
   - Default
   - TransparentFX

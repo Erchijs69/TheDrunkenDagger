@@ -21,6 +21,10 @@ public class PlayerBuffs : MonoBehaviour
     [Header("Stealth Buff Timer")]
     public float stealthBuffDuration = 30f;
 
+
+    [HideInInspector]
+    public bool isTinyTinasCurseActive = false;
+
     private PlayerMovement playerMovement;
 
     private StealthScreenEffect stealthEffect;
@@ -28,6 +32,19 @@ public class PlayerBuffs : MonoBehaviour
     private bool isShrunk = false;
 
     public PlayerStealthKill playerStealthKill;
+
+    [HideInInspector]
+    public bool isMasterAssassinActive = false;
+
+    public BuffUIManager buffUIManager;
+
+    private Coroutine speedBoostCoroutine;
+    private Coroutine jumpBoostCoroutine;
+    private Coroutine swimBoostCoroutine;
+    private Coroutine stealthCoroutine;
+    private Coroutine masterAssassinCoroutine;
+
+
 
     private void Awake()
 {
@@ -38,38 +55,60 @@ public class PlayerBuffs : MonoBehaviour
 }
 
     public void ApplyBuff(string buffName)
+{
+    float duration = 10f;  // Default duration, but will be overridden below
+    
+    switch (buffName)
     {
-        switch (buffName)
-        {
-            case "Speed Boost":
-                StartCoroutine(ApplySpeedBoost());
-                break;
+        case "Speed Boost":
+            duration = speedBoostDuration;
+            if (speedBoostCoroutine != null) StopCoroutine(speedBoostCoroutine);
+            speedBoostCoroutine = StartCoroutine(ApplySpeedBoost());
+            buffUIManager.ShowBuff("Speed Boost", duration);
+            break;
 
-            case "Jump Height":
-                StartCoroutine(ApplyJumpBoost());
-                break;
+        case "Jump Height":
+            duration = jumpBoostDuration;
+            if (jumpBoostCoroutine != null) StopCoroutine(jumpBoostCoroutine);
+            jumpBoostCoroutine = StartCoroutine(ApplyJumpBoost());
+            buffUIManager.ShowBuff("Jump Height", duration);
+            break;
 
-            case "Swim Speed":
-                ApplySwimSpeedBoost(swimBoostMultiplier, swimBoostDuration);
-                break;
+        case "Swim Speed":
+            duration = swimBoostDuration;
+            if (swimBoostCoroutine != null) StopCoroutine(swimBoostCoroutine);
+            swimBoostCoroutine = StartCoroutine(SwimSpeedCoroutine(swimBoostMultiplier, duration));
+            buffUIManager.ShowBuff("Swim Speed", duration);
+            break;
 
-            case "Wraith Form":
-                StartCoroutine(ApplyStealthCoroutine(stealthDuration));
-                break;
+        case "Wraith Form":
+            duration = stealthDuration;
+            if (stealthCoroutine != null) StopCoroutine(stealthCoroutine);
+            stealthCoroutine = StartCoroutine(ApplyStealthCoroutine(duration));
+            buffUIManager.ShowBuff("Wraith Form", duration);
+            break;
 
-            case "Tiny Tina's Curse":
-                ApplyPermanentShrink();
-                break;    
-                
-            case "Master Assassin":
-                StartCoroutine(ApplyMasterAssassinBuff());
-                break;
+        case "Tiny Tina's Curse":
+            duration = 9999999f; // Or set to your desired long duration
+            ApplyPermanentShrink();
+            isTinyTinasCurseActive = true;
+            buffUIManager.ShowBuff("Tiny Tina's Curse", duration);
+            break;
+
+
+        case "Master Assassin":
+            duration = stealthBuffDuration;
+            if (masterAssassinCoroutine != null) StopCoroutine(masterAssassinCoroutine);
+            masterAssassinCoroutine = StartCoroutine(ApplyMasterAssassinBuff());
+            buffUIManager.ShowBuff("Master Assassin", duration);
+            break;
 
             default:
-                Debug.LogWarning($"Buff '{buffName}' not recognized.");
-                break;
-        }
+            Debug.LogWarning($"Buff '{buffName}' not recognized.");
+            break;
     }
+}
+
 
     private IEnumerator ApplySpeedBoost()
     {
@@ -93,22 +132,15 @@ public class PlayerBuffs : MonoBehaviour
         Debug.Log("Jump Height Boost reset!");
     }
 
-    public void ApplySwimSpeedBoost(float swimSpeed, float duration)
-    {
-        void Apply()
-        {
-            playerMovement.SetSwimSpeed(swimSpeed);
-            Debug.Log("Swim speed boost applied!");
-        }
+    private IEnumerator SwimSpeedCoroutine(float swimSpeed, float duration)
+{
+    playerMovement.SetSwimSpeed(swimSpeed);
+    Debug.Log("Swim speed boost applied!");
+    yield return new WaitForSeconds(duration);
+    playerMovement.SetSwimSpeed(5f); // Replace with your default speed
+    Debug.Log("Swim speed boost reset!");
+}
 
-        void Reset()
-        {
-            playerMovement.SetSwimSpeed(5f); // Reset to your desired "base" swim speed
-            Debug.Log("Swim speed boost reset!");
-        }
-
-        ApplyBuffWithTimer(Apply, Reset, duration);
-    }
 
     private void ApplyBuffWithTimer(System.Action applyEffect, System.Action removeEffect, float duration)
     {
@@ -155,33 +187,31 @@ public void ApplyPermanentShrink()
 public IEnumerator ApplyMasterAssassinBuff()
 {
     Debug.Log("Master Assassin buff applied!");
+    isMasterAssassinActive = true;
 
     // Enable fast stealth mode (affects crouch speed and kill animation speed)
     playerMovement.EnableFastStealthMode(true);
 
-    // Adjust the kill animation speed in PlayerStealthKill
     if (playerStealthKill != null)
     {
         playerStealthKill.fastStealthMode = true;
-        playerStealthKill.fastKillAnimSpeed = 2f; // Set this to whatever value you need
+        playerStealthKill.fastKillAnimSpeed = 2f;
     }
 
-    // Wait for the duration of the buff
     yield return new WaitForSeconds(stealthBuffDuration);
 
-    // Disable fast stealth mode
+    // Reset everything
+    isMasterAssassinActive = false;
     playerMovement.EnableFastStealthMode(false);
 
-    // Reset the kill animation speed
     if (playerStealthKill != null)
     {
         playerStealthKill.fastStealthMode = false;
-        playerStealthKill.fastKillAnimSpeed = 1f; // Reset to default speed
+        playerStealthKill.fastKillAnimSpeed = 1f;
     }
 
     Debug.Log("Master Assassin buff ended!");
 }
-
 
 }
 

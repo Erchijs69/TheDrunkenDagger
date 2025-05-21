@@ -22,19 +22,29 @@ public class JournalUI : MonoBehaviour
     }
 
     void Update()
+{
+    if (!IsDialogueActive() && !playerMovement.IsStealthed)  // Check if dialogue is active
     {
-        if (Input.GetKeyDown(KeyCode.J) && !playerMovement.IsStealthed)
-    {
-        if (!isOpen)
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            StartCoroutine(OpenJournal());
-        }
-        else
-        {
-            CloseJournal();
+            if (!isOpen)
+            {
+                StartCoroutine(OpenJournal());
+            }
+            else
+            {
+                CloseJournal();
+            }
         }
     }
-    }
+}
+
+private bool IsDialogueActive()
+{
+    // Check if dialogue is active in the DialogueManager
+    return FindObjectOfType<DialogueManager>().dialoguePanel.activeSelf;
+}
+
 
     IEnumerator OpenJournal()
     {
