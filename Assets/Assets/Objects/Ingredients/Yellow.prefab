@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3114123989876951254}
   - component: {fileID: -7942403645053310715}
   - component: {fileID: 7290678462893211570}
+  - component: {fileID: 2261217623885912855}
   m_Layer: 8
   m_Name: Yellow
   m_TagString: Ingredient
@@ -101,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientColor: {r: 1, g: 0.99999994, b: 0, a: 0}
   ingredientType: Yellow
+  isPlaced: 0
 --- !u!54 &3114123989876951254
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -164,3 +166,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7849541, y: 0.095986366, z: 0.8111608}
   m_Center: {x: -0.052392483, y: -0.00000047683716, z: -0.010720372}
+--- !u!114 &2261217623885912855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7138994074293968839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814640ef9cec2c24a8f47027c133a5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}

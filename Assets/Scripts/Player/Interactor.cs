@@ -22,14 +22,12 @@ public class Interactor : MonoBehaviour
 
     public LayerMask cartLayer;
 
+    private OutlineEffect currentOutlinedItem;
+
     private PlayerBuffs playerBuffs;
-
-    
-
 
     [Header("Stealth Settings")]
     public float stealthTakedownDistance = 2f;
-
 
     void Start()
     {
@@ -71,7 +69,7 @@ public class Interactor : MonoBehaviour
                 playerMovement = enemy.player.GetComponent<PlayerMovement>();
                 isStealthed = playerMovement != null && playerMovement.IsStealthed;
 
-                 isPlayerDetected = enemy.PlayerDetected;
+                isPlayerDetected = enemy.PlayerDetected;
 
                 if (!isStealthed && !isPlayerDetected && !isPlayerTiny && distance <= stealthTakedownDistance)
                 {
@@ -116,8 +114,48 @@ public class Interactor : MonoBehaviour
         if (InventoryManager.Instance.itemPickup != null && InventoryManager.Instance.itemPickup.IsHoldingItem())
             return;
 
+        // OUTLINE HIGHLIGHT LOGIC (runs every frame if inventory is closed)
         if (!InventoryManager.Instance.IsInventoryOpen)
         {
+            Ray itemRay = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
+            RaycastHit itemHit;
+            bool hitItem = Physics.Raycast(itemRay, out itemHit, InteractRange, itemLayer);
+
+            if (hitItem)
+            {
+                var outlineEffect = itemHit.collider.GetComponent<OutlineEffect>();
+
+                // Only outline if the item is active (not in inventory)
+                if (outlineEffect != null && itemHit.collider.gameObject.activeInHierarchy)
+                {
+                    if (currentOutlinedItem != outlineEffect)
+                    {
+                        if (currentOutlinedItem != null)
+                            currentOutlinedItem.DisableOutline();
+
+                        currentOutlinedItem = outlineEffect;
+                        currentOutlinedItem.EnableOutline();
+                    }
+                }
+                else
+                {
+                    if (currentOutlinedItem != null)
+                    {
+                        currentOutlinedItem.DisableOutline();
+                        currentOutlinedItem = null;
+                    }
+                }
+            }
+            else
+            {
+                if (currentOutlinedItem != null)
+                {
+                    currentOutlinedItem.DisableOutline();
+                    currentOutlinedItem = null;
+                }
+            }
+
+            // PICKUP ITEM ON Q PRESS
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 if (InventoryManager.Instance.ItemCount >= InventoryManager.Instance.maxInventorySlots)
@@ -126,8 +164,7 @@ public class Interactor : MonoBehaviour
                     return;
                 }
 
-                Ray itemRay = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
-                if (Physics.Raycast(itemRay, out RaycastHit itemHit, InteractRange, itemLayer))
+                if (hitItem)
                 {
                     GameObject itemObject = itemHit.collider.gameObject;
                     InventoryManager.Instance.AddItem(itemObject);
@@ -136,9 +173,6 @@ public class Interactor : MonoBehaviour
                 }
             }
         }
-    
-
-
     }
 
     void OnDrawGizmos()
@@ -150,4 +184,5 @@ public class Interactor : MonoBehaviour
         }
     }
 }
+
 

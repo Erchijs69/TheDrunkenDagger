@@ -11,30 +11,39 @@ public class GameManager : MonoBehaviour
     public int deathCount = 0;
     public int maxDeaths = 3;
 
+    public HeartUI heartUI;
+
     private void Awake()
     {
-        // Just assign the static reference; allow duplicates on scene load
         Managerinstance = this;
 
-        // Find player at start (if scene already loaded)
         if (player == null)
-        {
             player = FindObjectOfType<PlayerMovement>();
-        }
 
-        // Subscribe to scene loaded event
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDestroy()
     {
-        // Unsubscribe when destroyed to avoid leaks
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         GameObject playerObj = GameObject.Find("Player");
+
+        PlayerMovement[] players = FindObjectsOfType<PlayerMovement>();
+        if (players.Length > 1)
+        {
+            foreach (var p in players)
+            {
+                if (p != playerObj.GetComponent<PlayerMovement>())
+                {
+                    Destroy(p.gameObject);
+                }
+            }
+        }
+
         if (playerObj != null)
         {
             player = playerObj.GetComponent<PlayerMovement>();
@@ -45,14 +54,29 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("Player GameObject not found in scene.");
         }
+
+        if (heartUI == null)
+            heartUI = FindObjectOfType<HeartUI>();
+
+        heartUI?.UpdateHearts(deathCount);
     }
 
     public void PlayerDied()
     {
         deathCount++;
+
+        if (heartUI != null)
+        {
+            heartUI.UpdateHearts(deathCount);
+        }
+        else
+        {
+            Debug.LogWarning("HeartUI is not assigned!");
+        }
+
         if (deathCount >= maxDeaths)
         {
-            deathCount = 0; // Optional: reset counter on scene restart
+            deathCount = 0;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         else
@@ -66,22 +90,23 @@ public class GameManager : MonoBehaviour
     {
         if (player != null && respawnPoint != null)
         {
-            player.controller.enabled = false; // Disable to safely reposition
+            player.controller.enabled = false;
             player.transform.position = respawnPoint.position;
             player.transform.rotation = respawnPoint.rotation;
-            player.controller.enabled = true; // Re-enable for normal movement
+            player.controller.enabled = true;
         }
     }
 
     private void ResetAllEnemies()
-{
-    EnemyMultiPatrol[] enemies = FindObjectsOfType<EnemyMultiPatrol>();
-    foreach (var enemy in enemies)
     {
-        enemy.ResetEnemy();
+        EnemyMultiPatrol[] enemies = FindObjectsOfType<EnemyMultiPatrol>();
+        foreach (var enemy in enemies)
+        {
+            enemy.ResetEnemy();
+        }
     }
 }
-}
+
 
 
 

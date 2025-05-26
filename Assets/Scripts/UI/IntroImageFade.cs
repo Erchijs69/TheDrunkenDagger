@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class IntroImageFade : MonoBehaviour
@@ -8,8 +7,11 @@ public class IntroImageFade : MonoBehaviour
     public float fadeDuration = 1f;
     public float showDuration = 1f;
 
-    void Start()
+    public MouseLook mouseLook; // Assign in inspector
+
+    public void PlayIntroFade()
     {
+        gameObject.SetActive(true); // Enable the image
         StartCoroutine(FadeRoutine());
     }
 
@@ -39,7 +41,12 @@ public class IntroImageFade : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+
+        // 🔒 Lock cursor and enable mouse look here
+        mouseLook.EnableMouseLook();
     }
 }
+
+
 
 

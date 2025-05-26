@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1448795879758076090}
   - component: {fileID: 550597847493343861}
   - component: {fileID: 8886171163462142636}
+  - component: {fileID: 7746813888238787855}
   m_Layer: 8
   m_Name: Orange
   m_TagString: Ingredient
@@ -101,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientColor: {r: 0.764151, g: 0.33995733, b: 0, a: 0}
   ingredientType: Orange
+  isPlaced: 0
 --- !u!54 &1448795879758076090
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -164,3 +166,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7099571, y: 0.10230255, z: 0.89986277}
   m_Center: {x: -0.049752235, y: 0, z: 0.091502786}
+--- !u!114 &7746813888238787855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 379931058493177465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814640ef9cec2c24a8f47027c133a5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}

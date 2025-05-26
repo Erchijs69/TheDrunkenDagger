@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 259186629109209249}
   - component: {fileID: -6978417907251040222}
   - component: {fileID: 1160719072868879381}
+  - component: {fileID: 3776014723717929209}
   m_Layer: 8
   m_Name: Blue
   m_TagString: Ingredient
@@ -101,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientColor: {r: 0, g: 0.106796265, b: 1, a: 0}
   ingredientType: Blue
+  isPlaced: 0
 --- !u!54 &259186629109209249
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -164,3 +166,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.631598, y: 0.09184551, z: 0.7984643}
   m_Center: {x: 0.00011777878, y: -0.00000047683716, z: -0.03432715}
+--- !u!114 &3776014723717929209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6427537825276668556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814640ef9cec2c24a8f47027c133a5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}

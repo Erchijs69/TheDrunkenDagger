@@ -78,7 +78,6 @@ public class PlayerMovement : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {

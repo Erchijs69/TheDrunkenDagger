@@ -7,7 +7,7 @@ public class MouseLook : MonoBehaviour
     public float mouseSensitivity = 100f;
     public Transform playerBody;
 
-    public bool canLook = true;
+    public bool canLook = false; // Disable mouse look initially
 
     public Texture2D customCursor;
     public Vector2 hotSpot = new Vector2(16, 16);
@@ -16,8 +16,9 @@ public class MouseLook : MonoBehaviour
 
     void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        // Allow cursor movement at start
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         Cursor.SetCursor(customCursor, hotSpot, CursorMode.Auto);
     }
 
@@ -35,11 +36,19 @@ public class MouseLook : MonoBehaviour
         playerBody.Rotate(Vector3.up * mouseX);
     }
 
+    public void EnableMouseLook()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        canLook = true;
+    }
+
     public void FreezeLook(bool freeze)
     {
         canLook = !freeze;
     }
 }
+
 
 
 

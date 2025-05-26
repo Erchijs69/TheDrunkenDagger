@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1578632388822008008}
   - component: {fileID: 6204198869163073464}
   - component: {fileID: 1162950881122617509}
+  - component: {fileID: -6239678580858618647}
   m_Layer: 8
   m_Name: Cyan
   m_TagString: Ingredient
@@ -101,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientColor: {r: 0.1254902, g: 0.82745105, b: 0.82745105, a: 0}
   ingredientType: Cyan
+  isPlaced: 0
 --- !u!54 &1578632388822008008
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -164,3 +166,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.73519003, y: 0.095448494, z: 1.3245239}
   m_Center: {x: 0.01594621, y: -0.002058506, z: -0.060101807}
+--- !u!114 &-6239678580858618647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5869061835624483672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814640ef9cec2c24a8f47027c133a5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1310000168440881172}
   - component: {fileID: -2916279464635044141}
   - component: {fileID: 4820610320778945479}
+  - component: {fileID: -569348096418604291}
   m_Layer: 8
   m_Name: Purple
   m_TagString: Ingredient
@@ -101,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientColor: {r: 0.42352945, g: 0.11764707, b: 0.6627451, a: 0}
   ingredientType: Purple
+  isPlaced: 0
 --- !u!54 &1310000168440881172
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -164,3 +166,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.9291005, y: 0.101112366, z: 0.8933676}
   m_Center: {x: 0.0025179386, y: 0.0000009536743, z: 0.14197305}
+--- !u!114 &-569348096418604291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8903571988786681823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814640ef9cec2c24a8f47027c133a5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}

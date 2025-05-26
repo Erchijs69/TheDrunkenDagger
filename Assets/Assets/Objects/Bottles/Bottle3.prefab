@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -4682969998936404953}
   - component: {fileID: -2944301218195335495}
   - component: {fileID: -4096248437594300499}
+  - component: {fileID: -692640103046027065}
   m_Layer: 8
   m_Name: Bottle3
   m_TagString: Bottle
@@ -169,6 +170,20 @@ MonoBehaviour:
     type: 3}
   effectNameCanvas: {fileID: 0}
   effectNameText: {fileID: 0}
+  finalPotionColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &-692640103046027065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7057685485972578442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814640ef9cec2c24a8f47027c133a5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}
 --- !u!1001 &4654645373425021964
 PrefabInstance:
   m_ObjectHideFlags: 0
