@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c41ba1ddc8628f488bb0744f9315528, type: 3}
   m_Name: 3
   m_EditorClassIdentifier: 
-  questName: ES JEBAL
-  questDescription: SKIBIDI
-  isComplete: 0
+  questName: SPEED POTION
+  questDescription: Craft a speed potion (Green, Green, Green) and place it on the
+    placement spot (Real placement later)
+  isComplete: 1
   questType: 1
   targetObject: {fileID: 3997984506326488915, guid: 43f8f1af1ddb1a244a30333c795ac754,
     type: 3}

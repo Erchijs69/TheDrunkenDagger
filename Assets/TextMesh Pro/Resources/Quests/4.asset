@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c41ba1ddc8628f488bb0744f9315528, type: 3}
   m_Name: 4
   m_EditorClassIdentifier: 
-  questName: POTION STUFF
-  questDescription: PLEASEEE
+  questName: Phalin's Potion
+  questDescription: Craft a potion that resembles Nature, something about Trees in
+    Autumn, Spring and Summer? And place it in her hands (Real placement later)
   isComplete: 0
   questType: 1
   targetObject: {fileID: 3997984506326488915, guid: c42130e8e1ee75d499919bf8fc0abef5,

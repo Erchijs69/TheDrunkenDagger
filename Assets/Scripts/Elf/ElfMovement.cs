@@ -38,7 +38,7 @@ namespace Unity.AI.Navigation.Samples
             agent.isStopped = true;
             dialogueManager = FindObjectOfType<DialogueManager>();
 
-            followStopQuest = QuestManager.Instance.GetQuestByName("ES JEBAL");
+            followStopQuest = QuestManager.Instance.GetQuestByName("SPEED POTION");
 
             if (playerTransform == null)
             {

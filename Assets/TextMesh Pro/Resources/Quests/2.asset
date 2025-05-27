@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c41ba1ddc8628f488bb0744f9315528, type: 3}
   m_Name: 2
   m_EditorClassIdentifier: 
-  questName: Talk To Phalin
-  questDescription: talk to the little guy
+  questName: Talk To The Customer
+  questDescription: Talk to the new customer
   isComplete: 0
   questType: 0
   targetObject: {fileID: 0}
