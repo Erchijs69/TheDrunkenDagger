@@ -4,19 +4,17 @@ using UnityEngine;
 
 public class IngredientSpawner : MonoBehaviour
 {
-    public GameObject ingredientPrefab;  // The prefab of the ingredient
-    public LayerMask interactionLayer;  // Layer mask to detect player interaction
-    public float interactionRange = 3f;  // Range to interact with the cube
-    public KeyCode spawnKey = KeyCode.E;  // The key to trigger ingredient spawn
+    public GameObject ingredientPrefab;
+    public LayerMask interactionLayer;
+    public float interactionRange = 3f;
+    public KeyCode spawnKey = KeyCode.E;
+    public Vector3 spawnOffset = new Vector3(0, -1, 0);
 
-    public Vector3 spawnOffset = new Vector3(0, -1, 0);  // Offset for the spawn position (spawn below the cube)
-
-    private Vector3 lastSpawnPosition;  // Store the last position of the spawned ingredient
-    private bool canSpawn = false;  // Whether the cube is in range to spawn an ingredient
+    private Vector3 lastSpawnPosition;
+    private bool canSpawn = false;
 
     void Start()
     {
-        // Initialize lastSpawnPosition to the cube's current position
         lastSpawnPosition = transform.position;
     }
 
@@ -54,7 +52,6 @@ public class IngredientSpawner : MonoBehaviour
     {
         if (ingredientPrefab != null)
         {
-            // Calculate the spawn position with the offset (below the cube)
             Vector3 spawnPosition = transform.position + spawnOffset;
 
             GameObject newIngredient = Instantiate(ingredientPrefab, spawnPosition, Quaternion.identity);
@@ -62,7 +59,6 @@ public class IngredientSpawner : MonoBehaviour
 
             if (ingredientScript != null)
             {
-                // Store the spawn position of the new ingredient for future spawns
                 lastSpawnPosition = newIngredient.transform.position;
             }
 
@@ -74,4 +70,5 @@ public class IngredientSpawner : MonoBehaviour
         }
     }
 }
+
 

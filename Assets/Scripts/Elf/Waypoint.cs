@@ -11,6 +11,12 @@ public class DialogueLine
     public string lineText;
 }
 
+public enum PostQuestAction
+{
+    GoToNextWaypoint,
+    FollowPlayer
+}
+
 public class Waypoint : MonoBehaviour
 {
     public DialogueLine[] dialogueLines;
@@ -21,7 +27,11 @@ public class Waypoint : MonoBehaviour
     public bool triggersQuestOnEnd = false;
     public bool requiresQuestCompletion = false;
     public QuestSO requiredQuest;
+
+    [Header("Post Quest Action")]
+    public PostQuestAction postQuestAction = PostQuestAction.GoToNextWaypoint;
 }
+
 
 
 

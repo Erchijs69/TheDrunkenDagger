@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c41ba1ddc8628f488bb0744f9315528, type: 3}
   m_Name: 3
   m_EditorClassIdentifier: 
-  questName: SPEED POTION
-  questDescription: Craft a speed potion (Green, Green, Green) and place it on the
-    placement spot (Real placement later)
-  isComplete: 1
+  questName: Craft a Speed Potion
+  questDescription: Craft a speed potion from green herbs, Show phalin what it does
+    (Place the Speed Potion on the shelf nextto Phalin to continue quest)
+  isComplete: 0
   questType: 1
-  targetObject: {fileID: 3997984506326488915, guid: 43f8f1af1ddb1a244a30333c795ac754,
+  targetObject: {fileID: 7164129974062280234, guid: 496e331c50183c7458fe39cf848f9623,
     type: 3}
   requiredItemName: 
   requiredPotionEffectName: Speed Boost

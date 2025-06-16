@@ -7,7 +7,7 @@ public class ScreenFader : MonoBehaviour
 {
     public static ScreenFader Instance;
 
-    public Image blackScreenImage; // Assign the full-screen black Image here
+    public Image blackScreenImage; 
     public float fadeDuration = 1f;
 
     private void Awake()
@@ -17,7 +17,7 @@ public class ScreenFader : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         SetAlpha(0);
-        blackScreenImage.gameObject.SetActive(false); // <-- Disable it initially
+        blackScreenImage.gameObject.SetActive(false); 
     }
     else
     {
@@ -33,25 +33,25 @@ public class ScreenFader : MonoBehaviour
 
     private IEnumerator FadeTeleportRoutine(Transform player, Vector3 targetPosition, Action onTeleported)
     {
-        // Fade to black
+        
         yield return StartCoroutine(Fade(0, 1));
 
-        // Teleport player
+        
         player.position = targetPosition;
 
-        // Callback for actions after teleport (like changing skybox)
+        
         onTeleported?.Invoke();
 
-        // Small wait for safety
+        
         yield return new WaitForSeconds(0.1f);
 
-        // Fade back to transparent
+        
         yield return StartCoroutine(Fade(1, 0));
     }
 
     private IEnumerator Fade(float startAlpha, float endAlpha)
 {
-    blackScreenImage.gameObject.SetActive(true); // Enable before fading
+    blackScreenImage.gameObject.SetActive(true); 
 
     float elapsed = 0f;
     while (elapsed < fadeDuration)
@@ -64,7 +64,7 @@ public class ScreenFader : MonoBehaviour
 
     SetAlpha(endAlpha);
 
-    // If faded to transparent, disable it
+    
     if (endAlpha == 0)
     {
         blackScreenImage.gameObject.SetActive(false);

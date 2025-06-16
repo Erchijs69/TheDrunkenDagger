@@ -15,7 +15,6 @@ public class SkyboxManager : MonoBehaviour
     public void ChangeSkybox(Material newSkybox)
     {
         RenderSettings.skybox = newSkybox;
-        // If you want the change to be immediate:
         DynamicGI.UpdateEnvironment();
     }
 }

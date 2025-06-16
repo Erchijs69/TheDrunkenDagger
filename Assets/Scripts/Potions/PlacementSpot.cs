@@ -35,7 +35,7 @@ public class PlacementSpot : MonoBehaviour
             {
                 Debug.Log($"Current quest: {currentQuest.questName}");
 
-                // Prevent repeated completions for the same quest
+                
                 if (currentQuest.questName == lastCompletedQuest)
                 {
                     Debug.Log("[Repeat Protection] Quest already completed. Skipping...");
@@ -65,7 +65,7 @@ public class PlacementSpot : MonoBehaviour
                         }
                         else
                         {
-                            // Only check Item if no Potion component found
+                           
                             Item itemComponent = other.GetComponent<Item>();
                             if (itemComponent != null)
                             {
@@ -83,7 +83,7 @@ public class PlacementSpot : MonoBehaviour
                             Debug.Log("Placed correct item/potion for quest.");
                             QuestManager.Instance.CheckItemPlacement(other.gameObject, gameObject);
 
-                            // Store last completed quest name to prevent repeat
+                            
                             lastCompletedQuest = currentQuest.questName;
                         }
                         else

@@ -261,8 +261,7 @@ else if (liquidImage != null)
     // Drop the item immediately after it's spawned
     itemPickup.ForceDropHeldItem();
 
-    // Ensure the inventory stays open when right-clicking an item
-    // We removed the ToggleInventory() call here, so the inventory remains open
+   
 }
 
 

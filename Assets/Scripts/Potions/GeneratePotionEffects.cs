@@ -6,7 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Define the ingredients and effects
+       
         string[] ingredients = { "Blue", "Cyan", "Green", "Orange", "Pink", "Purple", "Red", "White", "Yellow" };
         string[] effects = {
             "Master Assassin|Enhances speed for stealth attacks and enhances crouch speed",
@@ -17,10 +17,10 @@ class Program
             "Tiny Tina's Curse|Shrinks you down permanently"
         };
 
-        // Initialize a dictionary to hold potion effects
+        
         Dictionary<string, string> potionEffects = new Dictionary<string, string>();
 
-        // Generate all combinations
+        
         foreach (var first in ingredients)
         {
             foreach (var second in ingredients)
@@ -29,7 +29,7 @@ class Program
                 {
                     string combination = first + second + third;
 
-                    // Avoid previously defined effects (Quick Potion and Natures Sense)
+                    
                     if (combination == "OrangeOrangeOrange" ||
                         combination == "RedRedRed" ||
                         combination == "CyanCyanCyan" ||
@@ -46,7 +46,7 @@ class Program
                         continue;
                     }
 
-                    // Randomly assign effects from the list to each combination
+                    
                     Random random = new Random();
                     string effect = effects[random.Next(effects.Length)];
 
@@ -54,13 +54,13 @@ class Program
                     string effectName = effectParts[0];
                     string effectDescription = effectParts[1];
 
-                    // Store the combination and its effect in the dictionary
+                   
                     potionEffects.Add(combination, $"{effectName}: {effectDescription}");
                 }
             }
         }
 
-        // Write the result to a text file
+        
         using (StreamWriter sw = new StreamWriter("PotionEffects.txt"))
         {
             foreach (var entry in potionEffects)

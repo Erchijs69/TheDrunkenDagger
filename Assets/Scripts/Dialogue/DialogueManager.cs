@@ -10,7 +10,7 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text speakerNameText;
     public GameObject dialoguePanel;
 
-    public DialogueLine[] dialogueLines; // Now uses custom class with speakerName
+    public DialogueLine[] dialogueLines; 
     private int currentLineIndex = 0;
 
     private ElfMovement elfMovement;
@@ -21,7 +21,7 @@ public class DialogueManager : MonoBehaviour
     public bool requiresQuestCompletion = false;
     public QuestSO requiredQuest;
 
-    // New flag to allow closing dialogue when quest incomplete
+   
     private bool isAtLastLineRepeated = false;
 
     public bool dialogueWasCancelled { get; private set; } = false;
@@ -39,13 +39,12 @@ public class DialogueManager : MonoBehaviour
     {
         if (elfMovement != null && elfMovement.isDialogueActive)
         {
-            // Advance dialogue with E or left mouse click
+            
             if (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0))
             {
                 if (isAtLastLineRepeated)
                 {
-                    // If we're repeating last line, don't advance further — let player close
-                    // Optional: could show a "Press ESC to close" hint here
+                    
                 }
                 else
                 {
@@ -53,7 +52,7 @@ public class DialogueManager : MonoBehaviour
                 }
             }
 
-            // Allow closing dialogue anytime with Escape
+            
             if (Input.GetKeyDown(KeyCode.Escape))
 {
     dialogueWasCancelled = true;
@@ -70,7 +69,7 @@ public class DialogueManager : MonoBehaviour
         elfMovement.StopMovement();
     }
 
-    dialogueWasCancelled = false; // Reset cancel flag
+    dialogueWasCancelled = false; 
     dialoguePanel.SetActive(true);
     currentLineIndex = 0;
     isAtLastLineRepeated = false;
@@ -101,13 +100,12 @@ public class DialogueManager : MonoBehaviour
         {
             if (requiresQuestCompletion && requiredQuest != null && !requiredQuest.isComplete)
             {
-                // Instead of looping infinitely here,
-                // show the last line once and then let player close dialogue
+                
                 currentLineIndex = dialogueLines.Length - 1;
                 speakerNameText.text = dialogueLines[currentLineIndex].speakerName;
                 dialogueText.text = dialogueLines[currentLineIndex].lineText;
 
-                // Set flag so AdvanceDialogue no longer progresses dialogue
+               
                 isAtLastLineRepeated = true;
 
                 return;
@@ -122,7 +120,7 @@ public class DialogueManager : MonoBehaviour
 
         if (triggersQuestOnEnd)
         {
-            QuestManager.Instance.CompleteQuest();  // No argument version
+            QuestManager.Instance.CompleteQuest(); 
         }
 
         if (elfMovement != null)
@@ -139,7 +137,7 @@ public class DialogueManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Reset flag so next dialogue session works properly
+        
         isAtLastLineRepeated = false;
     }
 

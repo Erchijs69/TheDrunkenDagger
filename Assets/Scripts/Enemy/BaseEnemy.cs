@@ -30,6 +30,10 @@ public abstract class BaseEnemy : MonoBehaviour, IInteractable
 
     protected PlayerMovement playerMovement;
 
+    protected bool isDead = false;
+    public bool IsDead => isDead;
+
+
     protected virtual void Start()
     {
         if (player != null)
@@ -189,7 +193,7 @@ public abstract class BaseEnemy : MonoBehaviour, IInteractable
             Debug.LogWarning("Dagger object not assigned in Inspector.");
             yield return new WaitForSeconds(1f);
         }
-
+        isDead = true;
         Destroy(gameObject);
         if (playerMovement != null) playerMovement.canMove = true;
         if (mouseLook != null) mouseLook.FreezeLook(false);

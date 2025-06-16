@@ -44,8 +44,6 @@ public class ItemPickup : MonoBehaviour
         {
             Debug.LogWarning("Animator not found on holdPosition! Forcing creation.");
             holdAnimator = holdPosition.gameObject.AddComponent<Animator>();
-            // You could also force-assign a fallback AnimatorController if needed:
-            // holdAnimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("FallbackAnimator");
         }
     }
 

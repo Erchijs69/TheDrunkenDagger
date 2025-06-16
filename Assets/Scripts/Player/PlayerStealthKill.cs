@@ -12,7 +12,7 @@ public class PlayerStealthKill : MonoBehaviour
     public float fastKillAnimSpeed = 2f;
 
     [Header("Stealth UI")]
-    public CanvasGroup stealthTextUI; // Use CanvasGroup for fade
+    public CanvasGroup stealthTextUI; 
 
     public void ExecuteStealthKill(BaseEnemy enemy)
     {
@@ -54,7 +54,7 @@ public class PlayerStealthKill : MonoBehaviour
 
         Destroy(enemy.gameObject);
 
-        ShowStealthUI(); // Show UI after kill
+        ShowStealthUI(); 
 
         if (playerMovement != null) playerMovement.canMove = true;
         if (mouseLook != null) mouseLook.FreezeLook(false);
@@ -71,7 +71,7 @@ public class PlayerStealthKill : MonoBehaviour
 
     private IEnumerator FadeOutStealthUI()
     {
-        yield return new WaitForSeconds(2f); // visible delay
+        yield return new WaitForSeconds(2f); 
 
         float fadeDuration = 1f;
         float t = 0f;

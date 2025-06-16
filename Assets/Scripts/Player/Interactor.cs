@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Unity.AI.Navigation.Samples;
+using UnityEngine.UI;
 
 interface IInteractable
 {
@@ -26,6 +28,19 @@ public class Interactor : MonoBehaviour
 
     private PlayerBuffs playerBuffs;
 
+    public ElfMovement elfShooter;
+
+
+    public float shootRange = 200f;
+
+    public float shootCooldown = 6f;
+    private bool canShoot = true;
+
+
+    
+
+
+
     [Header("Stealth Settings")]
     public float stealthTakedownDistance = 2f;
 
@@ -47,6 +62,44 @@ public class Interactor : MonoBehaviour
 
         bool isStealthed = playerMovement != null && playerMovement.IsStealthed;
 
+
+        if (Input.GetKeyDown(KeyCode.F) && canShoot)
+        {
+            Ray shootRay = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
+
+            if (Physics.Raycast(shootRay, out RaycastHit shootHit, shootRange, interactableLayers))
+            {
+                BaseEnemy targetEnemy = shootHit.collider.GetComponent<BaseEnemy>();
+
+                if (targetEnemy != null)
+                {
+                    float distanceToEnemy = Vector3.Distance(transform.position, targetEnemy.transform.position);
+
+                    if (distanceToEnemy <= shootRange)
+                    {
+                        Debug.Log("Enemy detected by interactor raycast.");
+
+                        elfShooter.LookAtTarget(targetEnemy.transform);
+
+                        canShoot = false;  // disable shooting until cooldown expires
+                        StartCoroutine(DelayedShoot(targetEnemy, 2f)); // shoot after delay
+                        StartCoroutine(ShootCooldownRoutine());
+                    }
+                    else
+                    {
+                        Debug.Log($"Enemy is too far to shoot (distance: {distanceToEnemy}, max range: {shootRange}).");
+                    }
+                }
+                else
+                {
+                    Debug.Log("Raycast hit something, but it's not an enemy.");
+                }
+            }
+            else
+            {
+                Debug.Log("No valid target hit within arrow shoot range.");
+            }
+        }
         // Early exit if stealthed or tiny, hide prompt
         if (isStealthed || isPlayerTiny)
         {
@@ -75,6 +128,8 @@ public class Interactor : MonoBehaviour
                 {
                     canTakedown = true;
                 }
+
+
             }
 
             if (Input.GetKeyDown(KeyCode.E) && interactable != null)
@@ -84,6 +139,8 @@ public class Interactor : MonoBehaviour
             }
 
             hitPotion = currentHitObject.GetComponent<Potion>();
+
+
         }
 
         if (hitPotion != null && Vector3.Distance(transform.position, hitPotion.transform.position) <= InteractRange)
@@ -103,18 +160,18 @@ public class Interactor : MonoBehaviour
             currentPotion = null;
         }
 
-        // Show stealth prompt only if takedown is allowed, player is NOT detected or tiny or stealthed
+        
         if (stealthPromptUI != null)
             stealthPromptUI.SetActive(canTakedown);
 
-        // Early return if stealthed
+       
         if (isStealthed)
             return;
 
         if (InventoryManager.Instance.itemPickup != null && InventoryManager.Instance.itemPickup.IsHoldingItem())
             return;
 
-        // OUTLINE HIGHLIGHT LOGIC (runs every frame if inventory is closed)
+        
         if (!InventoryManager.Instance.IsInventoryOpen)
         {
             Ray itemRay = new Ray(InteractorSource.position + InteractorSource.forward * 0.5f, InteractorSource.forward);
@@ -125,7 +182,7 @@ public class Interactor : MonoBehaviour
             {
                 var outlineEffect = itemHit.collider.GetComponent<OutlineEffect>();
 
-                // Only outline if the item is active (not in inventory)
+               
                 if (outlineEffect != null && itemHit.collider.gameObject.activeInHierarchy)
                 {
                     if (currentOutlinedItem != outlineEffect)
@@ -181,8 +238,29 @@ public class Interactor : MonoBehaviour
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(InteractorSource.position, InteractRange);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, shootRange);
+
         }
     }
+
+    private IEnumerator DelayedShoot(BaseEnemy target, float delaySeconds)
+    {
+        yield return new WaitForSeconds(delaySeconds);
+
+        if (elfShooter != null && target != null)
+        {
+            elfShooter.ShootAtTarget(target.transform);
+            Debug.Log($"ElfShooter shot arrow at {target.name} after {delaySeconds} seconds delay.");
+        }
+    }
+
+private IEnumerator ShootCooldownRoutine()
+{
+    yield return new WaitForSeconds(shootCooldown);
+    canShoot = true; 
+}
+
 }
 
 

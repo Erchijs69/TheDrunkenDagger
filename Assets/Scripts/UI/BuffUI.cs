@@ -3,18 +3,18 @@ using UnityEngine.UI;
 
 public class BuffUI : MonoBehaviour
 {
-    public Image buffIcon;         // The icon for this specific buff
-    public Image buffFillImage;    // Circular or bar fill image
-    public Image backgroundImage;  // Background image (semi-transparent)
-    public float buffDuration;     // Set when activated
+    public Image buffIcon;         
+    public Image buffFillImage;    
+    public Image backgroundImage;  
+    public float buffDuration;    
     private float timer;
     private bool isBuffActive;
-    public Vector2 backgroundSize = new Vector2(150, 150); // Default adjustable size
+    public Vector2 backgroundSize = new Vector2(150, 150); 
 
 
     void Start()
     {
-        // Hide all UI elements at start
+       
         buffIcon.enabled = false;
         buffFillImage.enabled = false;
         backgroundImage.enabled = false;
@@ -29,8 +29,8 @@ public class BuffUI : MonoBehaviour
     buffFillImage.enabled = true;
     backgroundImage.enabled = true;
 
-    SetBackgroundTransparency(0.4f); // Semi-transparent
-    backgroundImage.rectTransform.sizeDelta = backgroundSize; // Apply adjustable size
+    SetBackgroundTransparency(0.4f);
+    backgroundImage.rectTransform.sizeDelta = backgroundSize; 
 
     buffDuration = duration;
     timer = duration;

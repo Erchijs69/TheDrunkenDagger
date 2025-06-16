@@ -11,10 +11,10 @@ public class SplineFollower : MonoBehaviour
     public bool loop = true;
 
     [Header("Optional Facing")]
-    public Transform forwardFacingChild; // Optional: assign a child object to handle rotation separately
+    public Transform forwardFacingChild; 
 
     [Header("Rotation Offset")]
-    public Vector3 rotationOffsetEuler = Vector3.zero; // Editable offset in inspector
+    public Vector3 rotationOffsetEuler = Vector3.zero; 
 
     private float t = 0f;
 
@@ -42,58 +42,57 @@ public class SplineFollower : MonoBehaviour
 
     int numPoints = points.Length;
 
-    // If loop is false, clamp t so we stop at the last segment
+    
     if (!loop)
     {
-        // Stop at the last full segment
         float maxT = numPoints - 3;
-        t = Mathf.Min(t, maxT);  // Prevent going beyond the last waypoint
+        t = Mathf.Min(t, maxT);  
     }
 
     int segment = Mathf.FloorToInt(t);
     float localT = t - segment;
 
-    // Clamp segment index for non-looping mode to stay at the last point
+    
     if (!loop && segment >= numPoints - 3)
     {
         segment = numPoints - 4;
-        localT = 1f; // Stick to the final position
+        localT = 1f; 
     }
 
-    // Loop wrap logic for looping mode
+   
     int p0 = (segment - 1 + numPoints) % numPoints;
     int p1 = (segment + 0) % numPoints;
     int p2 = (segment + 1) % numPoints;
     int p3 = (segment + 2) % numPoints;
 
-    // Calculate the current position based on the Catmull-Rom spline
+   
     Vector3 currentPos = CatmullRom(points[p0].position, points[p1].position, points[p2].position, points[p3].position, localT);
 
-    // If we're not looping, stay at the last point when we reach the last waypoint
+   
     if (!loop && segment >= numPoints - 3)
     {
         currentPos = points[numPoints - 1].position;
     }
 
-    // Update the object's position
+  
     transform.position = currentPos;
 
-    // If we're not looping, don't calculate look direction past the last point
+   
     Vector3 lookDir = Vector3.zero;
     if (!loop && segment < numPoints - 1)
     {
-        // Get the next waypoint position for rotation
+       
         Vector3 nextPoint = points[Mathf.Min(segment + 1, numPoints - 1)].position;
         lookDir = (nextPoint - currentPos).normalized;
     }
     else if (loop)
     {
-        // For looping, continue calculating look direction as usual
+        
         Vector3 nextPoint = points[Mathf.Min(segment + 1, numPoints - 1)].position;
         lookDir = (nextPoint - currentPos).normalized;
     }
 
-    // Rotate to face the look direction (if any)
+    
     if (lookDir != Vector3.zero)
     {
         Quaternion baseRotation = Quaternion.LookRotation(lookDir);
@@ -104,7 +103,7 @@ public class SplineFollower : MonoBehaviour
             forwardFacingChild.rotation = baseRotation * offsetRotation;
     }
 
-    // If loop is enabled, loop back to the start
+    
     if (loop && t >= numPoints)
         t -= numPoints;
 }

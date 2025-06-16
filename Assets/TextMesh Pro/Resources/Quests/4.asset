@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: 4
   m_EditorClassIdentifier: 
   questName: Phalin's Potion
-  questDescription: Craft a potion that resembles Nature, something about Trees in
-    Autumn, Spring and Summer? And place it in her hands (Real placement later)
+  questDescription: 'Craft a potion that resembles Nature, something about Trees
+    in Autumn, Spring and Summer? Place the bottle next to Phalin on the shelf '
   isComplete: 0
   questType: 1
-  targetObject: {fileID: 3997984506326488915, guid: c42130e8e1ee75d499919bf8fc0abef5,
+  targetObject: {fileID: 2740215668829310723, guid: 975304651e0f7544ea35fd760b3afd4e,
     type: 3}
   requiredItemName: 
   requiredPotionEffectName: Natures Sense

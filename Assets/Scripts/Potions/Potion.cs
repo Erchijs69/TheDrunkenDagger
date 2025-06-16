@@ -27,7 +27,7 @@ public class Potion : MonoBehaviour
         HasBeenConsumed = true;
         Debug.Log($"Potion {potionEffectName} consumed!");
 
-        // Disable colliders to prevent future pickup
+       
         Collider[] colliders = GetComponents<Collider>();
         foreach (var col in colliders)
             col.enabled = false;
@@ -37,7 +37,7 @@ public class Potion : MonoBehaviour
 {
     if (effectNameCanvas != null && effectNameText != null)
     {
-        Debug.Log("Showing potion effect name: " + potionEffectName); // Debug log added
+        Debug.Log("Showing potion effect name: " + potionEffectName); 
         effectNameText.text = potionEffectName;
         effectNameCanvas.SetActive(true);
     }
@@ -51,7 +51,7 @@ public void HideEffectName()
 {
     if (effectNameCanvas != null)
     {
-        Debug.Log("Hiding potion effect name."); // Debug log added
+        Debug.Log("Hiding potion effect name."); 
         effectNameCanvas.SetActive(false);
     }
 }
@@ -62,7 +62,7 @@ public void HideEffectName()
     Renderer renderer = GetComponent<Renderer>();
     if (renderer != null)
     {
-        // Assuming you're updating a shader property for the potion color
+      
         renderer.material.SetColor("_Color", newColor);
         Debug.Log($"Potion color updated to {newColor}");
     }

@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class JournalUI : MonoBehaviour
 {
-    public GameObject journalObject;             // The full journal UI GameObject
-    public Animator animator;                    // Animator for open animation
-    public GameObject questTextContainer;        // Object holding quest text (Title + Description)
-    public float textDelay = 0.5f;               // Delay before showing quest text
+    public GameObject journalObject;            
+    public Animator animator;                   
+    public GameObject questTextContainer;       
+    public float textDelay = 0.5f;              
 
     private bool isOpen = false;
 
@@ -15,15 +15,15 @@ public class JournalUI : MonoBehaviour
 
     void Start()
     {
-        journalObject.SetActive(false);          // Hide journal on start
-        questTextContainer.SetActive(false);     // Hide text on start
-        playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
+        journalObject.SetActive(false);          
+        questTextContainer.SetActive(false);     
+        playerMovement = FindObjectOfType<PlayerMovement>(); 
 
     }
 
     void Update()
 {
-    if (!IsDialogueActive() && !playerMovement.IsStealthed)  // Check if dialogue is active
+    if (!IsDialogueActive() && !playerMovement.IsStealthed)  
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
@@ -41,7 +41,7 @@ public class JournalUI : MonoBehaviour
 
 private bool IsDialogueActive()
 {
-    // Check if dialogue is active in the DialogueManager
+    
     return FindObjectOfType<DialogueManager>().dialoguePanel.activeSelf;
 }
 
@@ -50,15 +50,15 @@ private bool IsDialogueActive()
     {
         isOpen = true;
         journalObject.SetActive(true);
-        animator.Play("Open");                   // Play opening animation
+        animator.Play("Open");                  
         yield return new WaitForSeconds(textDelay);
-        questTextContainer.SetActive(true);      // Show quest text after delay
+        questTextContainer.SetActive(true);    
     }
 
     void CloseJournal()
     {
         isOpen = false;
         journalObject.SetActive(false);
-        questTextContainer.SetActive(false);     // Reset text state too
+        questTextContainer.SetActive(false);     
     }
 }

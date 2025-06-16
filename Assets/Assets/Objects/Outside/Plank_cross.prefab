@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2580803747559573131}
   - component: {fileID: 6789735286997415984}
   - component: {fileID: 4126707501548709478}
+  - component: {fileID: 6597355218595711281}
   m_Layer: 0
   m_Name: Plank_cross
   m_TagString: Untagged
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &6597355218595711281
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3480115609170148908}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 45.116425, y: 7.9095006, z: 2.0626683}
+  m_Center: {x: -1.8771467, y: -0.08682631, z: 0.017796215}

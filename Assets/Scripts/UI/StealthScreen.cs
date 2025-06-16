@@ -4,7 +4,7 @@ using System.Collections;
 
 public class StealthScreenEffect : MonoBehaviour
 {
-    public static StealthScreenEffect Instance; // ✅ Add this line
+    public static StealthScreenEffect Instance; 
 
     public Image stealthOverlayImage;
     public float fadeSpeed = 2f;
@@ -13,30 +13,30 @@ public class StealthScreenEffect : MonoBehaviour
 
     private void Awake()
     {
-        // ✅ Ensure only one instance exists
+       
         if (Instance == null)
         {
             Instance = this;
         }
         else
         {
-            Destroy(gameObject); // Prevent duplicates
+            Destroy(gameObject); 
         }
 
-        // Optional: Hide on start
+       
         stealthOverlayImage.color = new Color(0, 0, 1, 0);
     }
 
     public void ShowOverlay()
     {
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
-        fadeCoroutine = StartCoroutine(FadeToAlpha(0.3f)); // Semi-transparent blue
+        fadeCoroutine = StartCoroutine(FadeToAlpha(0.3f)); 
     }
 
     public void HideOverlay()
     {
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
-        fadeCoroutine = StartCoroutine(FadeToAlpha(0f)); // Transparent
+        fadeCoroutine = StartCoroutine(FadeToAlpha(0f)); 
     }
 
     private IEnumerator FadeToAlpha(float targetAlpha)

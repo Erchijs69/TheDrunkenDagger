@@ -13,7 +13,7 @@ public class BuffUIManager : MonoBehaviour
 
     public List<BuffSlot> buffSlots;
 
-    // Called from PlayerBuffs when a potion is consumed
+  
     public void ShowBuff(string buffName, float duration)
     {
         foreach (BuffSlot slot in buffSlots)
@@ -25,7 +25,6 @@ public class BuffUIManager : MonoBehaviour
             }
         }
 
-        Debug.LogWarning("No UI slot found for buff: " + buffName);
     }
 }
 

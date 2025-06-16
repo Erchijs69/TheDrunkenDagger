@@ -6,7 +6,7 @@ public class InventoryUI : MonoBehaviour
 {
     private List<GameObject> inventoryItems = new List<GameObject>();
 
-    // Call this method to remove the item from the UI
+   
     public void RemoveItemFromUI(string itemName)
     {
         GameObject itemToRemove = inventoryItems.Find(item => item.name == itemName);

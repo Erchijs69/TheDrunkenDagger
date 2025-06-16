@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: Open the Door
   questDescription: Open the door to let the elf through.
-  isComplete: 1
+  isComplete: 0
   questType: 0
-  targetObject: {fileID: 6596354628948739954, guid: 00e9da79412acf1439a3cbf642e6f8c7,
+  targetObject: {fileID: 1141569701711564581, guid: 69330aaae02e93448a0218f7b0a714c2,
     type: 3}
   requiredItemName: 
   requiredPotionEffectName: 

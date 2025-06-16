@@ -81,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate player in new scene
+            Destroy(gameObject); 
         }
     }
 
@@ -92,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
         gameManager = GameManager.Managerinstance;
         if (gameManager != null)
         {
-            // Optional: let the player register itself to GameManager (if needed)
+            
             gameManager.player = this;
         }
         originalHeight = controller.height;
@@ -115,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        // ✅ Movement detection
+        
         IsMoving = (x != 0 || z != 0);
 
         if (!isInWater)
@@ -135,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     StartCoroutine(ChangeCrouchState(false));
 
-                    // ✅ Mark player as just stood up
+                   
                     JustStoodUp = true;
                     stoodUpTimer = gracePeriod;
                 }
@@ -167,20 +167,20 @@ public class PlayerMovement : MonoBehaviour
 {
     if (playerBuffs != null && playerBuffs.isTinyTinasCurseActive)
     {
-        // Fly above water
+        
         Vector3 floatPosition = transform.position;
-        float targetY = waterSurfaceY + floatHeight + 0.5f; // Slightly above water
+        float targetY = waterSurfaceY + floatHeight + 0.5f;
         floatPosition.y = Mathf.Lerp(floatPosition.y, targetY, Time.deltaTime * 5f);
         transform.position = floatPosition;
 
         Vector3 flyMove = move.normalized * speed * speedMultiplier * Time.deltaTime;
         controller.Move(flyMove);
 
-        velocity.y = 0f; // Cancel gravity
+        velocity.y = 0f; 
     }
     else
     {
-        // Normal swim behavior
+       
         float waterMoveSpeed = Mathf.Max(0f, swimControlSpeed);
         Vector3 waterMovement = move.normalized * waterMoveSpeed * Time.deltaTime;
         controller.Move(waterMovement);
@@ -216,7 +216,7 @@ else
             }
         }
 
-        // ✅ Countdown to clear JustStoodUp
+        
         if (JustStoodUp)
         {
             stoodUpTimer -= Time.deltaTime;
@@ -323,10 +323,10 @@ else
     
     public void TeleportTo(Vector3 newPosition)
 {
-    controller.enabled = false;  // Disable controller to safely change position
+    controller.enabled = false;  
     transform.position = newPosition;
-    controller.enabled = true;   // Re-enable controller
-    velocity = Vector3.zero;     // Reset velocity to avoid falling issues right after teleport
+    controller.enabled = true;   
+    velocity = Vector3.zero;     
 }
 
 }

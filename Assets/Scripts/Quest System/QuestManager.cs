@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 #if UNITY_EDITOR
-using UnityEditor;  // Needed for PrefabUtility
+using UnityEditor;  
 #endif
 
 public class QuestManager : MonoBehaviour
@@ -37,23 +37,19 @@ public class QuestManager : MonoBehaviour
     {
         if (currentQuest == null)
         {
-            Debug.LogWarning("[QuestManager] No current quest to complete.");
+            
             return;
         }
 
-        Debug.Log("[QuestManager] Completing starting quest immediately.");
+        
         CompleteQuest();
 
-        // If you want to trigger any QuestTrigger logic, you could find and call it here:
+       
         QuestTrigger trigger = FindObjectOfType<QuestTrigger>();
         if (trigger != null)
         {
             trigger.TriggerNextQuest();
-            Debug.Log("[QuestManager] QuestTrigger found and next quest triggered.");
-        }
-        else
-        {
-            Debug.LogWarning("[QuestManager] No QuestTrigger found to trigger next quest.");
+
         }
     }
 
@@ -64,7 +60,7 @@ public class QuestManager : MonoBehaviour
         questCompletionStatus = new bool[questChain.quests.Length];
         currentQuestIndex = 0;
 
-        // Reset all isComplete values on the ScriptableObjects
+        
         foreach (var quest in questChain.quests)
         {
             quest.isComplete = false;
@@ -86,7 +82,7 @@ public class QuestManager : MonoBehaviour
         currentQuest.isComplete = false;
 
 #if UNITY_EDITOR
-        // Handle PlaceItem quests where targetObject might be a prefab asset
+        
         if (currentQuest.questType == QuestSO.QuestType.PlaceItem && currentQuest.targetObject != null)
         {
             GameObject target = currentQuest.targetObject;
@@ -121,7 +117,7 @@ public class QuestManager : MonoBehaviour
         if (currentQuest != null && !questCompletionStatus[currentQuestIndex])
         {
             questCompletionStatus[currentQuestIndex] = true;
-            currentQuest.isComplete = true; // Add this line to sync SO state
+            currentQuest.isComplete = true; 
             Debug.Log($"[QuestManager] Completed quest: {currentQuest.name}, InstanceID = {currentQuest.GetInstanceID()}");
 
             Debug.Log($"Quest Completed: {currentQuest.questName} at index {currentQuestIndex}");
@@ -159,7 +155,7 @@ public class QuestManager : MonoBehaviour
         if (placementSpot.name != currentQuest.targetObject.name)
             return false;
 
-        // Check if it's a potion
+        
         Potion potion = placedItem.GetComponent<Potion>();
         if (potion != null && potion.potionEffectName == currentQuest.requiredPotionEffectName)
         {
@@ -167,7 +163,7 @@ public class QuestManager : MonoBehaviour
             return true;
         }
 
-        // Check if it's a regular item
+        
         Item item = placedItem.GetComponent<Item>();
         if (item != null && item.itemName == currentQuest.requiredItemName)
         {
@@ -201,13 +197,3 @@ public class QuestManager : MonoBehaviour
     return null;
 }
 }
-
-
-
-
-
-
-
-
-
-

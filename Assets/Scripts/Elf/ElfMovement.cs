@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Unity.AI.Navigation.Samples
 {
@@ -17,6 +18,36 @@ namespace Unity.AI.Navigation.Samples
 
         private bool hasStartedFollowing = false;
 
+        private bool isUsingBowAnimations = false;
+        private bool hasPlayedBowDraw = false;
+
+        private bool isIdlePlaying = false;
+        private float idleCheckTimer = 0f;
+        private float idleCheckInterval = 5f;
+
+        public Transform shootPoint; 
+        public GameObject arrowPrefab; 
+
+        private Transform shootingTarget;
+
+        
+
+
+        [Header("Shooting Settings")]
+        public float arrowSpeed = 20f;
+        public float maxShootingDistance = 100f; 
+        public float arrowSpawnDelay = 0.5f;
+
+        [Header("Quiver Settings")]
+        public List<GameObject> quiverArrows = new List<GameObject>(); 
+
+        private int maxArrows = 10;
+        private int currentArrowCount;
+
+
+
+
+        [SerializeField] private Animator animator;
 
         private bool questRequiredAndIncomplete = false;
         private QuestSO currentRequiredQuest = null;
@@ -28,17 +59,19 @@ namespace Unity.AI.Navigation.Samples
         public QuestSO followStartQuest;
         private QuestSO followStopQuest;
 
-
         private bool isFollowingPlayer = false;
         private QuestSO nextQuestToWaitFor = null;
 
         void Start()
         {
+            animator = GetComponentInChildren<Animator>();
             agent = GetComponent<NavMeshAgent>();
             agent.isStopped = true;
             dialogueManager = FindObjectOfType<DialogueManager>();
+            currentArrowCount = maxArrows;
 
-            followStopQuest = QuestManager.Instance.GetQuestByName("SPEED POTION");
+
+            followStopQuest = QuestManager.Instance.GetQuestByName("Stack up on Potions and Embark");
 
             if (playerTransform == null)
             {
@@ -46,79 +79,166 @@ namespace Unity.AI.Navigation.Samples
                 if (playerGO != null)
                 {
                     playerTransform = playerGO.transform;
-                    Debug.Log("Follower: Found player transform.");
                 }
             }
         }
 
+
         void Update()
-{
-    Debug.Log($"Follower: Update running. isFollowingPlayer={isFollowingPlayer}, canMove={canMove}, currentWaypointIndex={currentWaypointIndex}");
+        {
+            
+            if (isFollowingPlayer && followStopQuest != null && followStopQuest.isComplete)
+            {
+                StopFollowingPlayerAndResume();
+                return;
+            }
 
-    // Always check if we should stop following FIRST
-    if (isFollowingPlayer && followStopQuest != null && followStopQuest.isComplete)
-    {
-        Debug.Log("Follower: followStopQuest complete. Calling StopFollowingPlayerAndResume.");
-        StopFollowingPlayerAndResume();
+           
+            if (isFollowingPlayer)
+            {
+                FollowPlayerUpdate();
+                return;
+            }
+
+            if (!isFollowingPlayer && !hasStartedFollowing && followStartQuest != null)
+            {
+                if (followStartQuest.isComplete)
+                {
+                    StartFollowingPlayer();
+                    hasStartedFollowing = true;
+                }
+            }
+
+            if (canMove && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+            {
+                OnReachWaypoint();
+            }
+
+            if (isFollowingPlayer && !animator.GetBool("useBowSet"))
+            {
+                animator.SetBool("useBowSet", true);
+            }
+
+
+            UpdateAnimation();
+        }
+
+
+       public void ShootAtTarget(Transform target)
+{
+    if (target == null || animator == null)
         return;
+
+    if (currentArrowCount <= 0)
+    {
+        Debug.Log("No arrows left!");
+        return; 
     }
 
-    // Only follow if follow hasn't been stopped above
-    if (isFollowingPlayer)
-    {
-        Debug.Log($"Follower: Following player. Agent destination = {agent.destination}");
-        FollowPlayerUpdate();
+    float distance = Vector3.Distance(transform.position, target.position);
+    if (distance > maxShootingDistance)
         return;
-    }
 
-    if (!isFollowingPlayer && !hasStartedFollowing && followStartQuest != null)
+    
+    Vector3 direction = (target.position - transform.position).normalized;
+    direction.y = 0f;
+    transform.rotation = Quaternion.LookRotation(direction);
+
+   
+    animator.SetTrigger("shootTrigger");
+
+    
+    ConsumeArrow();
+
+  
+    StartCoroutine(DelayedSpawnArrow(target));
+}
+
+
+private void ConsumeArrow()
 {
-    Debug.Log($"Follower: Checking followStartQuest. IsComplete = {followStartQuest.isComplete}");
-    if (followStartQuest.isComplete)
+    if (currentArrowCount <= 0)
+        return;
+
+    currentArrowCount--;
+
+    if (quiverArrows != null && quiverArrows.Count > 0)
     {
-        Debug.Log("Follower: followStartQuest is complete. Calling StartFollowingPlayer.");
-        StartFollowingPlayer();
-        hasStartedFollowing = true;
+       
+        GameObject arrowGO = quiverArrows[quiverArrows.Count - 1];
+        quiverArrows.RemoveAt(quiverArrows.Count - 1);
+
+        if (arrowGO != null)
+        {
+            Destroy(arrowGO);
+        }
     }
 }
 
 
-    if (canMove && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        private IEnumerator DelayedSpawnArrow(Transform target)
+        {
+            yield return new WaitForSeconds(arrowSpawnDelay);
+            SpawnArrow(target);
+        }
+
+public void SpawnArrow(Transform target)
+{
+    if (arrowPrefab == null || shootPoint == null || target == null)
+        return;
+
+    Vector3 direction = (target.position - shootPoint.position).normalized;
+    GameObject arrow = Instantiate(arrowPrefab, shootPoint.position, Quaternion.LookRotation(direction));
+
+    ArrowProjectile projectile = arrow.GetComponent<ArrowProjectile>();
+    if (projectile != null)
     {
-        OnReachWaypoint();
+        projectile.speed = arrowSpeed;
+        projectile.maxDistance = maxShootingDistance;
     }
 }
 
 
 
         void FollowPlayerUpdate()
-{
-    if (playerTransform == null)
-    {
-        Debug.Log("Follower: Player transform is null. Cannot follow.");
-        return;
-    }
+        {
+            if (playerTransform == null)
+                return;
 
-    if (followStopQuest != null && followStopQuest.isComplete)
-    {
-        Debug.Log("Follower: followStopQuest complete during follow. Stopping.");
-        StopFollowingPlayerAndResume();
-        return;
-    }
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
-    agent.isStopped = false;
-    agent.destination = playerTransform.position;
 
-    if (nextQuestToWaitFor != null && nextQuestToWaitFor.isComplete)
-    {
-        Debug.Log("Follower: Next quest completed. Stopping follow and resuming waypoints.");
-        isFollowingPlayer = false;
-        nextQuestToWaitFor = null;
-        canMove = true;
-        agent.isStopped = true;
-        MoveToNextWaypoint();
-    }
-}
+            if (distanceToPlayer > 25f)
+            {
+                Vector3 teleportOffset = -playerTransform.forward * 3f;
+                Vector3 teleportPosition = playerTransform.position + teleportOffset;
+
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(teleportPosition, out hit, 2f, NavMesh.AllAreas))
+                {
+                    agent.Warp(hit.position); 
+                }
+                else
+                {
+                  
+                    agent.Warp(teleportPosition);
+                }
+            }
+
+            agent.isStopped = false;
+            agent.destination = playerTransform.position;
+
+            if (nextQuestToWaitFor != null && nextQuestToWaitFor.isComplete)
+            {
+                isFollowingPlayer = false;
+                nextQuestToWaitFor = null;
+                canMove = true;
+                agent.isStopped = true;
+                MoveToNextWaypoint();
+            }
+
+            UpdateAnimation();
+        }
 
 
         public void MoveToNextWaypoint()
@@ -127,14 +247,11 @@ namespace Unity.AI.Navigation.Samples
             if (waypoints.Count == 0) return;
 
             if (currentWaypointIndex >= waypoints.Count)
-                {
-                    Debug.Log("Follower: Final waypoint reached. Stopping movement.");
-                    StopMovement(); // <- This disables canMove
-                    return;
-                }
+            {
+                StopMovement();
+                return;
+            }
 
-
-            Debug.Log($"Follower: Moving to waypoint {currentWaypointIndex}: {waypoints[currentWaypointIndex].name}");
             agent.destination = waypoints[currentWaypointIndex].position;
             agent.isStopped = false;
             canMove = true;
@@ -143,7 +260,6 @@ namespace Unity.AI.Navigation.Samples
 
         public void StartMovement()
         {
-            Debug.Log($"Follower: StartMovement called. canMove={canMove}, waypoints={waypoints.Count}");
             if (!canMove && waypoints.Count > 0)
             {
                 waitingForPlayer = false;
@@ -153,7 +269,6 @@ namespace Unity.AI.Navigation.Samples
 
         public void StopMovement()
         {
-            Debug.Log("Follower: Stopping movement.");
             canMove = false;
             agent.isStopped = true;
         }
@@ -163,7 +278,6 @@ namespace Unity.AI.Navigation.Samples
             if (currentWaypointIndex > waypoints.Count || currentWaypointIndex == 0) return;
 
             int prevIndex = currentWaypointIndex - 1;
-            Debug.Log($"Follower: Reached waypoint {prevIndex}: {waypoints[prevIndex].name}");
 
             Transform waypointTransform = waypoints[prevIndex];
             Waypoint waypoint = waypointTransform.GetComponent<Waypoint>();
@@ -174,7 +288,6 @@ namespace Unity.AI.Navigation.Samples
 
                 if (waypoint.requiresQuestCompletion && currentRequiredQuest != null && !currentRequiredQuest.isComplete)
                 {
-                    Debug.Log($"Follower: Quest '{currentRequiredQuest.questName}' required but incomplete. Waiting.");
                     StopMovement();
                     questRequiredAndIncomplete = true;
                     waitingForPlayer = true;
@@ -187,13 +300,11 @@ namespace Unity.AI.Navigation.Samples
                     nextQuestToWaitFor = GetNextQuestAfter(currentRequiredQuest);
                     if (nextQuestToWaitFor != null)
                     {
-                        Debug.Log($"Follower: Required quest '{currentRequiredQuest.questName}' complete. Starting follow until '{nextQuestToWaitFor.questName}' is done.");
                         StartFollowingPlayer();
                         return;
                     }
                     else
                     {
-                        Debug.Log("Follower: No next quest found. Proceeding to next waypoint.");
                         MoveToNextWaypoint();
                         return;
                     }
@@ -205,9 +316,43 @@ namespace Unity.AI.Navigation.Samples
                 canMove = false;
                 agent.isStopped = true;
                 waitingForPlayer = true;
-
-                Debug.Log("Follower: Waiting for player interaction at waypoint.");
             }
+        }
+
+        // ANIMATION
+        private void UpdateAnimation()
+        {
+            if (animator == null) return;
+
+            bool isMoving = agent.velocity.magnitude > 0.1f && !agent.isStopped;
+            animator.SetBool("isWalking", isMoving);
+
+            if (!isMoving)
+            {
+                idleCheckTimer += Time.deltaTime;
+
+                if (idleCheckTimer >= idleCheckInterval)
+                {
+                    float chance = Random.Range(0f, 1f);
+                    if (chance <= 0.25f)
+                    {
+                        animator.SetBool("isIdlePlaying", true);
+                        StartCoroutine(ResetIdleFlagAfterAnimation());
+                    }
+                }
+            }
+            else
+            {
+                animator.SetBool("isIdlePlaying", false);
+                idleCheckTimer = 0f;
+            }
+
+        }
+
+        private IEnumerator ResetIdleFlagAfterAnimation()
+        {
+            yield return new WaitForSeconds(2f);
+            animator.SetBool("isIdlePlaying", false);
         }
 
         private QuestSO GetNextQuestAfter(QuestSO quest)
@@ -223,40 +368,52 @@ namespace Unity.AI.Navigation.Samples
                 {
                     if (i + 1 < chain.Length)
                     {
-                        Debug.Log($"Follower: Next quest after '{quest.questName}' is '{chain[i + 1].questName}'");
                         return chain[i + 1];
                     }
                     else
                     {
-                        Debug.Log($"Follower: '{quest.questName}' is the last quest in the chain.");
                         return null;
                     }
                 }
             }
 
-            Debug.Log($"Follower: Quest '{quest.questName}' not found in quest chain.");
             return null;
         }
 
         void StartFollowingPlayer()
         {
-            Debug.Log("Follower: Starting to follow player.");
             isFollowingPlayer = true;
             canMove = false;
-            agent.isStopped = false;
+            agent.isStopped = true; 
             waitingForPlayer = false;
             questRequiredAndIncomplete = false;
-            agent.stoppingDistance = 2f;
+
+            agent.speed = 5f;
+
+            if (!hasPlayedBowDraw)
+            {
+                animator.SetTrigger("bowDrawTrigger");
+                StartCoroutine(WaitForBowDrawAnimation());
+            }
+            else
+            {
+                ActivateBowAnimationSet();
+                agent.isStopped = false;
+            }
+
+            agent.stoppingDistance = 6f;
         }
 
         void StopFollowingPlayerAndResume()
         {
-            Debug.Log("Follower: Stopping follow and resuming waypoint movement.");
-
             isFollowingPlayer = false;
             canMove = true;
             agent.isStopped = true;
             agent.stoppingDistance = 0f;
+
+
+            animator.SetBool("useBowSet", false);
+
             MoveToNextWaypoint();
         }
 
@@ -265,7 +422,6 @@ namespace Unity.AI.Navigation.Samples
         {
             if (dialogueManager != null)
             {
-                Debug.Log("Follower: Setting up dialogue from waypoint.");
                 dialogueManager.dialogueLines = waypoint.dialogueLines;
                 dialogueManager.triggersQuestOnEnd = waypoint.triggersQuestOnEnd;
                 dialogueManager.requiresQuestCompletion = waypoint.requiresQuestCompletion;
@@ -277,7 +433,6 @@ namespace Unity.AI.Navigation.Samples
         {
             if ((waitingForPlayer || questRequiredAndIncomplete) && gameObject.CompareTag("Elf"))
             {
-                Debug.Log("Follower: Player interacted. Starting dialogue.");
                 dialogueManager.StartDialogue();
                 waitingForPlayer = false;
                 isDialogueActive = true;
@@ -290,14 +445,12 @@ namespace Unity.AI.Navigation.Samples
 
             if (dialogueManager != null && dialogueManager.dialogueWasCancelled)
             {
-                Debug.Log("Follower: Dialogue cancelled. Elf stays.");
                 waitingForPlayer = true;
                 return;
             }
 
             if (questRequiredAndIncomplete && currentRequiredQuest != null && currentRequiredQuest.isComplete)
             {
-                Debug.Log("Follower: Required quest now complete after dialogue. Proceeding.");
                 questRequiredAndIncomplete = false;
                 waitingForPlayer = false;
                 MoveToNextWaypoint();
@@ -306,17 +459,61 @@ namespace Unity.AI.Navigation.Samples
 
             if (questRequiredAndIncomplete && currentRequiredQuest != null && !currentRequiredQuest.isComplete)
             {
-                Debug.Log("Follower: Quest still incomplete. Elf stays.");
                 waitingForPlayer = true;
                 return;
             }
 
-            Debug.Log("Follower: Dialogue finished. Proceeding to next waypoint.");
             waitingForPlayer = false;
             MoveToNextWaypoint();
         }
-    }  
+
+        public bool AgentIsMoving()
+        {
+            return agent != null && agent.velocity.magnitude > 0.1f && !agent.isStopped;
+        }
+
+        private IEnumerator WaitForBowDrawAnimation()
+        {
+           
+            while (!animator.GetCurrentAnimatorStateInfo(0).IsName("DrawBow"))
+            {
+                yield return null;
+            }
+
+            
+            float duration = animator.GetCurrentAnimatorStateInfo(0).length;
+            yield return new WaitForSeconds(duration);
+
+            hasPlayedBowDraw = true;
+            ActivateBowAnimationSet();
+            agent.isStopped = false;
+        }
+
+        private void ActivateBowAnimationSet()
+        {
+            isUsingBowAnimations = true;
+            animator.SetBool("useBowSet", true);
+        }
+
+        private void PlayRandomIdleVariation()
+        {
+          
+            animator.SetTrigger("idleVariationTrigger");
+        }
+
+        public void LookAtTarget(Transform target)
+        {
+            Vector3 direction = (target.position - transform.position).normalized;
+            direction.y = 0f;
+            if (direction != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(direction);
+            }
+        }
+    }
+
 }
+
 
 
 

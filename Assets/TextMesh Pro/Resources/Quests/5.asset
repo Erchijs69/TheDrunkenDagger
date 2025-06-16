@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c41ba1ddc8628f488bb0744f9315528, type: 3}
   m_Name: 5
   m_EditorClassIdentifier: 
-  questName: Move On To The Goblins Camp
-  questDescription: Interact with the Cart to move on to the goblins camp
+  questName: Stack up on Potions and Embark
+  questDescription: Experiment with the ingredients to mix potions, you'll need them.
+    Head to the cart, and snatch the golden dagger from the goblins
   isComplete: 0
   questType: 0
-  targetObject: {fileID: 919132149155446097, guid: 25fd64267e7759047955554e49a0b5a2,
-    type: 3}
+  targetObject: {fileID: 0}
   requiredItemName: 
   requiredPotionEffectName: 

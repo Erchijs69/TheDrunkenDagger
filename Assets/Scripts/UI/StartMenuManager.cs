@@ -6,7 +6,7 @@ public class StartMenuManager : MonoBehaviour
     public GameObject startMenuPanel;
     public IntroImageFade introFade;
     public Button startButton;
-    public MouseLook mouseLook; // Reference to MouseLook script
+    public MouseLook mouseLook; 
 
     void Start()
     {
@@ -16,7 +16,7 @@ public class StartMenuManager : MonoBehaviour
     void OnStartButtonPressed()
 {
     startMenuPanel.SetActive(false);
-    introFade.PlayIntroFade(); // Don't enable mouse look here anymore
+    introFade.PlayIntroFade(); 
 }
 
 }

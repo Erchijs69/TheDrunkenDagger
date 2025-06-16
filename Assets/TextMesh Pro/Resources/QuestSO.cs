@@ -20,4 +20,3 @@ public class QuestSO : ScriptableObject
     public string requiredPotionEffectName; // Used if item is a potion
 }
 
-

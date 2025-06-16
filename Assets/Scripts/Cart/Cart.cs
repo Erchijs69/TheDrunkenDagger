@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Cart : MonoBehaviour, IInteractable
 {
-    [SerializeField] private Transform teleportTarget; // teleport destination
-    [SerializeField] private Material newSkyboxMaterial; // assign the new skybox here
+    [SerializeField] private Transform teleportTarget; 
+    [SerializeField] private Material newSkyboxMaterial; 
 
     public void Interact()
     {
@@ -16,7 +16,6 @@ public class Cart : MonoBehaviour, IInteractable
                 if (newSkyboxMaterial != null)
                 {
                     RenderSettings.skybox = newSkyboxMaterial;
-                    // Update environment lighting if needed
                     if (EnvironmentLightingManager.Instance != null)
                     {
                         EnvironmentLightingManager.Instance.SetNightLighting();

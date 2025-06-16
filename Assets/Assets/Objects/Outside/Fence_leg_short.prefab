@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5315068512749059332}
   - component: {fileID: 5542127348807687449}
   - component: {fileID: 856118033415175157}
+  - component: {fileID: 2909148913827093692}
   m_Layer: 0
   m_Name: Fence_leg_short
   m_TagString: Untagged
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &2909148913827093692
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8009675491542293498}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10.53612, y: 9.118389, z: 53.37261}
+  m_Center: {x: -0.0000014305115, y: -0.000003099441, z: -7.3087916}

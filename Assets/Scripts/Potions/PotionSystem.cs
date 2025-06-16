@@ -8,28 +8,28 @@ public class PotionSystem : MonoBehaviour
     [SerializeField] private List<GameObject> placedIngredients = new List<GameObject>();
     public Transform[] ingredientSpots;
     private GameObject placedBottle;
-    private bool isPotionBlended = false; // Flag to track potion blending status
-    private float fillAmount = 1f; // Start full
+    private bool isPotionBlended = false; 
+    private float fillAmount = 1f;
     private Coroutine fillCoroutine;
-    public LayerMask itemLayer; // In the inspector, uncheck "UITrigger"
+    public LayerMask itemLayer; 
     public ItemPickup itemPickup;
-    private string lastPotionKey; // Store the key of the last created potion
+    private string lastPotionKey; 
 
     public Potion potion;
 
 
-    public PlayerMovement playerMovement; // Add this line
+    public PlayerMovement playerMovement; 
 
     //JUMP BUFF
-    public float jumpHeightBoostAmount = 5f; // Amount to boost jump height
-    public float jumpHeightBoostDuration = 10f; // Duration of the boost
-    private float originalJumpHeight; // To store the player's original jump height
+    public float jumpHeightBoostAmount = 5f; 
+    public float jumpHeightBoostDuration = 10f; 
+    private float originalJumpHeight; 
 
     private PlayerBuffs playerBuffs;
 
 
 
-    // Class to hold the potion effect data
+    
     public class PotionEffect
     {
         public string effectName;
@@ -42,7 +42,7 @@ public class PotionSystem : MonoBehaviour
         }
     }
 
-    // Mapping of ingredient combination to specific potion effects
+   
     private Dictionary<string, PotionEffect> potionEffects = new Dictionary<string, PotionEffect>();
 
     void Start()
@@ -51,7 +51,7 @@ public class PotionSystem : MonoBehaviour
         playerBuffs = FindObjectOfType<PlayerBuffs>();
 
         if (playerMovement == null)
-            playerMovement = FindObjectOfType<PlayerMovement>(); // Automatically find the PlayerMovement component
+            playerMovement = FindObjectOfType<PlayerMovement>(); 
 
         DisableIngredientSpots();
 
@@ -794,21 +794,21 @@ public class PotionSystem : MonoBehaviour
 
     public void PlaceBottle(GameObject bottle)
     {
-        // Remove the current bottle if one exists
+
         if (placedBottle != null)
         {
             RemoveBottle();
         }
 
-        // Set the new bottle
+        
         placedBottle = bottle;
         placedBottle.transform.SetParent(transform);
         Debug.Log($"Bottle placed: {bottle.name}");
 
-        // Reset the fill amount to full when a new bottle is placed
+        
         fillAmount = 1f;
 
-        // Show ingredient spots
+       
         ShowIngredientSpots();
     }
 
@@ -843,7 +843,7 @@ public class PotionSystem : MonoBehaviour
             ingredient.transform.SetParent(ingredientSpots[i]);
             placedIngredients.Add(ingredient);
 
-            // 🔒 Mark as placed
+           
             Ingredient ingredientScript = ingredient.GetComponent<Ingredient>();
             if (ingredientScript != null)
                 ingredientScript.isPlaced = true;
@@ -863,13 +863,13 @@ public class PotionSystem : MonoBehaviour
 
 
 
-    // Add a default effect to handle unknown potions
+    
     private void ProcessPotionCreation()
     {
         string potionKey = GeneratePotionKey();
         lastPotionKey = potionKey;
 
-        Color finalColor = GeneratePotionColor(); // Assume this is the blended color
+        Color finalColor = GeneratePotionColor(); 
 
         if (placedBottle != null)
         {
@@ -888,25 +888,23 @@ public class PotionSystem : MonoBehaviour
                     potion.potionEffectDescription = "This mixture had unexpected results.";
                 }
 
-                potion.finalPotionColor = finalColor; // <- store the final color
-                potion.UpdatePotionColor(finalColor); // <- update visual mesh too
+                potion.finalPotionColor = finalColor;
+                potion.UpdatePotionColor(finalColor); 
             }
         }
         else
         {
-            // No specific effect found, create potion with no effect
+            
             Debug.Log("Potion effect: None - Creating default potion.");
-            // Optionally apply some default behavior for no effect (like a neutral color or visual)
             Color defaultColor = Color.gray;
             if (placedBottle != null)
             {
-                Transform bottleVisual = placedBottle.transform.GetChild(0); // Assuming the visual is the first child
+                Transform bottleVisual = placedBottle.transform.GetChild(0); 
                 if (bottleVisual != null)
                 {
                     Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
                     if (bottleRenderer != null)
                     {
-                        // Apply default color to the bottle
                         bottleRenderer.material.SetColor("_BottomColor", defaultColor);
                         Color topColor = defaultColor * 0.5f;
                         topColor.a = 1f;
@@ -920,13 +918,13 @@ public class PotionSystem : MonoBehaviour
             }
         }
 
-        // Continue with potion creation (color blending and filling)
+        
         Color potionColor = GeneratePotionColor();
         Debug.Log($"Potion color generated: {potionColor}");
 
         if (placedBottle != null)
         {
-            Transform bottleVisual = placedBottle.transform.GetChild(0); // Assuming the visual is the first child
+            Transform bottleVisual = placedBottle.transform.GetChild(0); 
             if (bottleVisual != null)
             {
                 Renderer bottleRenderer = bottleVisual.GetComponent<Renderer>();
@@ -945,12 +943,12 @@ public class PotionSystem : MonoBehaviour
             }
         }
 
-        // Gradually reduce the fill amount from 1 to 0.5
+       
         if (fillCoroutine != null)
             StopCoroutine(fillCoroutine);
         fillCoroutine = StartCoroutine(GradualFillDecrease());
 
-        // Remove ingredients and prepare the potion for drinking
+       
         foreach (GameObject ingredient in placedIngredients)
         {
             Destroy(ingredient);
@@ -965,7 +963,7 @@ public class PotionSystem : MonoBehaviour
             if (potion != null)
             {
 
-                potion.ShowEffectName(); // <<< Show the effect name (even if it's empty or default)
+                potion.ShowEffectName();
             }
         }
     }
@@ -988,12 +986,12 @@ public class PotionSystem : MonoBehaviour
         }
         else if (effect.effectName.Contains("Wraith Form"))
         {
-            playerBuffs.ApplyBuff("Wraith Form"); // <<< Add this line
+            playerBuffs.ApplyBuff("Wraith Form"); 
         }
 
         else if (effect.effectName.Contains("Tiny Tina"))
         {
-            playerBuffs.ApplyPermanentShrink(); // Shrinks to 30% scale for 10 seconds
+            playerBuffs.ApplyPermanentShrink();
         }
 
         else if (effect.effectName.Contains("Master Assassin"))
@@ -1011,7 +1009,7 @@ public class PotionSystem : MonoBehaviour
 
 
 
-    // New method to apply the speed boost
+    
     private void ApplySpeedBoost()
     {
         if (itemPickup != null && itemPickup.playerMovement != null)
@@ -1033,14 +1031,14 @@ public class PotionSystem : MonoBehaviour
             Ingredient ingredientComponent = ingredient.GetComponent<Ingredient>();
             if (ingredientComponent != null)
             {
-                ingredientTypes.Add(ingredientComponent.ingredientType); // Use ingredientType here
+                ingredientTypes.Add(ingredientComponent.ingredientType); 
             }
         }
 
-        // Sort the ingredient types to ensure consistency for the key (this makes the order irrelevant)
+        
         ingredientTypes.Sort();
 
-        // Join the sorted types to form a unique key
+      
         return string.Join("", ingredientTypes);
     }
 
@@ -1069,16 +1067,16 @@ public class PotionSystem : MonoBehaviour
     {
         if (placedBottle != null)
         {
-            // Reset fill amount when the bottle is removed
+            
             fillAmount = 1f;
 
-            // Stop any ongoing fill coroutine
+            
             if (fillCoroutine != null)
             {
                 StopCoroutine(fillCoroutine);
             }
 
-            // Clear the ingredients list and disable spots
+            
             placedIngredients.Clear();
             DisableIngredientSpots();
             placedBottle = null;
@@ -1113,7 +1111,7 @@ public class PotionSystem : MonoBehaviour
         }
 
         Debug.Log("Potion fill is at 0.5 and won't decrease further.");
-        // Don't apply the speed boost here anymore.
+        
     }
 
 
@@ -1138,16 +1136,16 @@ public class PotionSystem : MonoBehaviour
             return;
         }
 
-        // Apply the effect now, when the potion is drunk
+       
         string key = lastPotionKey;
         if (potionEffects.ContainsKey(key))
         {
             PotionEffect effect = potionEffects[key];
             Debug.Log($"Drank potion: {effect.effectName}");
 
-            ApplyPotionEffect(effect); // ← Apply the effect here
+            ApplyPotionEffect(effect); 
 
-            // Optionally destroy bottle or play a drink animation
+            
             Destroy(bottle);
         }
     }

@@ -21,20 +21,34 @@ public class EnemyMultiPatrol : BaseEnemy
     private Vector3 startingPosition;
     private Quaternion startingRotation;
 
+    private Animator animator;
+    private bool isDetecting = false;
+
+
     protected override void Start()
-    {
-        base.Start();
-        agent = GetComponent<NavMeshAgent>();
-        agent.speed = patrolSpeed;
-        startingPosition = transform.position;
-        startingRotation = transform.rotation;
-        if (waypoints.Length > 0)
-            agent.SetDestination(waypoints[currentWaypointIndex].position);
-    }
+{
+    base.Start();
+    agent = GetComponent<NavMeshAgent>();
+    animator = GetComponentInChildren<Animator>();
+
+    agent.speed = patrolSpeed;
+    startingPosition = transform.position;
+    startingRotation = transform.rotation;
+
+    if (waypoints.Length > 0)
+        agent.SetDestination(waypoints[currentWaypointIndex].position);
+
+    animator.SetBool("IsRunning", false); // start with walk
+    Debug.Log("Start: Set IsRunning = false");
+}
+
+
 
     protected override void Update()
     {
         base.Update();
+
+        if (isDetecting) return; // freeze while detection animation is playing
 
         if (isChasing)
             agent.SetDestination(player.position);
@@ -42,22 +56,31 @@ public class EnemyMultiPatrol : BaseEnemy
             Patrol();
     }
 
+
     protected override void OnPlayerDetected()
     {
-        isChasing = true;
-        agent.speed = chaseSpeed;
+        if (!isChasing)
+        {
+            StartCoroutine(HandleDetectionAnimation());
+        }
+
         lastSeenTime = Time.time;
     }
 
+
     protected override void OnPlayerLost()
+{
+    if (isChasing && Time.time - lastSeenTime > lostPlayerTime)
     {
-        if (isChasing && Time.time - lastSeenTime > lostPlayerTime)
-        {
-            isChasing = false;
-            agent.speed = patrolSpeed;
-            GoToNextWaypoint();
-        }
+        isChasing = false;
+        agent.speed = patrolSpeed;
+        animator.SetBool("IsRunning", false); // go back to walk
+        Debug.Log("OnPlayerLost: Set IsRunning = false (returning to patrol)");
+        GoToNextWaypoint();
     }
+}
+
+
 
     void Patrol()
     {
@@ -91,22 +114,49 @@ public class EnemyMultiPatrol : BaseEnemy
         }
     }
 
-public void ResetEnemy()
+    public void ResetEnemy()
+    {
+        StopAllCoroutines();
+        isChasing = false;
+        isWaiting = false;
+        currentWaypointIndex = 0;
+        direction = 1;
+
+        transform.position = startingPosition;
+        transform.rotation = startingRotation;
+
+        agent.ResetPath();
+        agent.speed = patrolSpeed;
+
+        if (waypoints.Length > 0)
+            agent.SetDestination(waypoints[currentWaypointIndex].position);
+    }
+
+   private IEnumerator HandleDetectionAnimation()
 {
-    StopAllCoroutines();
+    isDetecting = true;
     isChasing = false;
-    isWaiting = false;
-    currentWaypointIndex = 0;
-    direction = 1;
+    agent.ResetPath(); // stop movement
 
-    transform.position = startingPosition;
-    transform.rotation = startingRotation;
+    animator.SetTrigger("DetectedTrigger"); // play detected anim
+    Debug.Log("HandleDetectionAnimation: Triggered 'DetectedTrigger'");
 
-    agent.ResetPath();
-    agent.speed = patrolSpeed;
+    animator.SetBool("IsRunning", false); // ensure running anim is off
+    Debug.Log("HandleDetectionAnimation: Set IsRunning = false (during detection)");
 
-    if (waypoints.Length > 0)
-        agent.SetDestination(waypoints[currentWaypointIndex].position);
+    yield return new WaitForSeconds(1f); // match length of Detected animation
+
+    isChasing = true;
+    agent.speed = chaseSpeed;
+
+    animator.SetBool("IsRunning", true); // start running anim
+    Debug.Log("HandleDetectionAnimation: Set IsRunning = true (chasing)");
+
+    isDetecting = false;
 }
+
+
+
+
 }
 

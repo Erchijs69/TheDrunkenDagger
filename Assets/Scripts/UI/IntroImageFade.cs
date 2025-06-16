@@ -7,11 +7,11 @@ public class IntroImageFade : MonoBehaviour
     public float fadeDuration = 1f;
     public float showDuration = 1f;
 
-    public MouseLook mouseLook; // Assign in inspector
+    public MouseLook mouseLook; 
 
     public void PlayIntroFade()
     {
-        gameObject.SetActive(true); // Enable the image
+        gameObject.SetActive(true); 
         StartCoroutine(FadeRoutine());
     }
 
@@ -19,7 +19,7 @@ public class IntroImageFade : MonoBehaviour
     {
         canvasGroup.alpha = 0f;
 
-        // Fade in
+        
         float t = 0;
         while (t < fadeDuration)
         {
@@ -28,10 +28,10 @@ public class IntroImageFade : MonoBehaviour
             yield return null;
         }
 
-        // Wait
+        
         yield return new WaitForSeconds(showDuration);
 
-        // Fade out
+        
         t = 0;
         while (t < fadeDuration)
         {
@@ -42,7 +42,7 @@ public class IntroImageFade : MonoBehaviour
 
         gameObject.SetActive(false);
 
-        // 🔒 Lock cursor and enable mouse look here
+        
         mouseLook.EnableMouseLook();
     }
 }

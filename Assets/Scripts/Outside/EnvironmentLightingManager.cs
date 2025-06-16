@@ -4,7 +4,7 @@ public class EnvironmentLightingManager : MonoBehaviour
 {
     public static EnvironmentLightingManager Instance;
 
-    [SerializeField] private Light directionalLight; // Assign your main directional light here
+    [SerializeField] private Light directionalLight;
 
     [Header("Lighting Profiles")]
     [SerializeField] private LightingSettings daySettings = new LightingSettings()
