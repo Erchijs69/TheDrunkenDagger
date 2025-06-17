@@ -31,11 +31,14 @@ public class EndSequenceScreen : MonoBehaviour, IInteractable
         // Fade to black
         yield return StartCoroutine(FadeImage(true));
 
-        // Show first TMP text
+        // Show first TMP text (Phalin)
         yield return StartCoroutine(ShowText(textPhalinGroup));
 
-        // Show second TMP text
+        // Show second TMP text (Caspian)
         yield return StartCoroutine(ShowText(textCaspianGroup));
+
+        // ✅ Add a short pause before reload
+        yield return new WaitForSeconds(1.5f);
 
         // Reload scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
