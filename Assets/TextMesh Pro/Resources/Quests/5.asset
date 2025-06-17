@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: Stack up on Potions and Embark
   questDescription: Experiment with the ingredients to mix potions, you'll need them.
-    Head to the cart, and snatch the golden dagger from the goblins
+    Head to the cart, and snatch the golden dagger from the goblins.
   isComplete: 0
   questType: 0
   targetObject: {fileID: 0}

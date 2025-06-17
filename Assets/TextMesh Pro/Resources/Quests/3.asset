@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 3
   m_EditorClassIdentifier: 
   questName: Craft a Speed Potion
-  questDescription: Craft a speed potion from green herbs, Show phalin what it does
-    (Place the Speed Potion on the shelf nextto Phalin to continue quest)
+  questDescription: Place a bottle on the green stand and craft a speed potion from
+    three green herbs. Place the Speed Potion on the cabinet next to the bookcase.
   isComplete: 0
   questType: 1
   targetObject: {fileID: 7164129974062280234, guid: 496e331c50183c7458fe39cf848f9623,

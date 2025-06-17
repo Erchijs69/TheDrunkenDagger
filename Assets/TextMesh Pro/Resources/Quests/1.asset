@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1
   m_EditorClassIdentifier: 
   questName: Open the Door
-  questDescription: Open the door to let the elf through.
+  questDescription: Open the door to let the customer through.
   isComplete: 0
   questType: 0
   targetObject: {fileID: 1141569701711564581, guid: 69330aaae02e93448a0218f7b0a714c2,

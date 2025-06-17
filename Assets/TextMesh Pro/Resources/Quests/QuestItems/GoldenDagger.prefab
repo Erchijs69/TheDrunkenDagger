@@ -11,17 +11,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 865276bf79c91404aa171c626b6ab475,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -30.234852
+      value: 79.88733
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 865276bf79c91404aa171c626b6ab475,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.706
+      value: -5.4057007
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 865276bf79c91404aa171c626b6ab475,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.5364456
+      value: 227.54492
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 865276bf79c91404aa171c626b6ab475,
         type: 3}
@@ -98,7 +98,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 865276bf79c91404aa171c626b6ab475,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5080113034787517325}
+      addedObject: {fileID: 1662294780821169808}
   m_SourcePrefab: {fileID: 100100000, guid: 865276bf79c91404aa171c626b6ab475, type: 3}
 --- !u!1 &162426136963176293 stripped
 GameObject:
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMaterial: {fileID: 2100000, guid: e87abba0d16a1534abe1320d59d6537f, type: 2}
---- !u!114 &5080113034787517325
+--- !u!114 &1662294780821169808
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -149,6 +149,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 162426136963176293}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b282be9f29c134644a7ed7cc8d312835, type: 3}
+  m_Script: {fileID: 11500000, guid: 8cf9c5b9d40bdc140bc71f1279a52022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fadeImage: {fileID: 0}
+  textPhalinGroup: {fileID: 0}
+  textCaspianGroup: {fileID: 0}
+  fadeDuration: 1
+  textDisplayDuration: 2.5

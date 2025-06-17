@@ -8,6 +8,7 @@ public class Cart : MonoBehaviour, IInteractable
     public void Interact()
     {
         Debug.Log("Interacting with the cart. Starting teleport...");
+        FindObjectOfType<SoundManager>().SwitchToNightAmbience();
 
         if (PlayerMovement.Instance != null && ScreenFader.Instance != null)
         {
