@@ -8,22 +8,22 @@ public class ScreenFader : MonoBehaviour
     public static ScreenFader Instance;
 
     public Image blackScreenImage; 
-    public float fadeDuration = 1f;
+    public float fadeDuration = 0.2f;
 
     private void Awake()
-{
-    if (Instance == null)
     {
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        SetAlpha(0);
-        blackScreenImage.gameObject.SetActive(false); 
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SetAlpha(0);
+            blackScreenImage.gameObject.SetActive(false); 
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
-    else
-    {
-        Destroy(gameObject);
-    }
-}
 
 
     public void FadeAndTeleport(Transform player, Vector3 targetPosition, Action onTeleported = null)
@@ -50,26 +50,26 @@ public class ScreenFader : MonoBehaviour
     }
 
     private IEnumerator Fade(float startAlpha, float endAlpha)
-{
-    blackScreenImage.gameObject.SetActive(true); 
-
-    float elapsed = 0f;
-    while (elapsed < fadeDuration)
     {
-        elapsed += Time.deltaTime;
-        float alpha = Mathf.Lerp(startAlpha, endAlpha, elapsed / fadeDuration);
-        SetAlpha(alpha);
-        yield return null;
-    }
+        blackScreenImage.gameObject.SetActive(true); 
 
-    SetAlpha(endAlpha);
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(startAlpha, endAlpha, elapsed / fadeDuration);
+            SetAlpha(alpha);
+            yield return null;
+        }
+
+        SetAlpha(endAlpha);
 
     
-    if (endAlpha == 0)
-    {
-        blackScreenImage.gameObject.SetActive(false);
+        if (endAlpha == 0)
+        {
+            blackScreenImage.gameObject.SetActive(false);
+        }
     }
-}
 
 
     private void SetAlpha(float alpha)
@@ -79,5 +79,3 @@ public class ScreenFader : MonoBehaviour
         blackScreenImage.color = c;
     }
 }
-
-

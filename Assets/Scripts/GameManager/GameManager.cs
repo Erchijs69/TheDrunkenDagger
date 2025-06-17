@@ -88,12 +88,24 @@ public class GameManager : MonoBehaviour
 
     public void RespawnPlayer()
     {
-        if (player != null && respawnPoint != null)
+        if (player != null && respawnPoint != null && ScreenFader.Instance != null)
         {
+            // Disable the controller before moving
             player.controller.enabled = false;
-            player.transform.position = respawnPoint.position;
-            player.transform.rotation = respawnPoint.rotation;
-            player.controller.enabled = true;
+
+            // Fade and move to respawn position
+            ScreenFader.Instance.FadeAndTeleport(player.transform, respawnPoint.position, () =>
+            {
+                // After fading out and teleporting, set the correct rotation
+                player.transform.rotation = respawnPoint.rotation;
+
+                // Reactivate the controller after move and rotation
+                player.controller.enabled = true;
+            });
+        }
+        else
+        {
+            Debug.LogWarning("Missing reference for player, respawnPoint, or ScreenFader.");
         }
     }
 
@@ -106,9 +118,3 @@ public class GameManager : MonoBehaviour
         }
     }
 }
-
-
-
-
-
-
